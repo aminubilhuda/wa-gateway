@@ -84,10 +84,8 @@ class AutoReplyManagementTest extends TestCase
         ]);
 
         // Post to message webhook
-        $response = $this->post(route('webhook.fonnte.message'), [
-            'sender' => '081234567890',
-            'message' => 'harga',
-        ]);
+        $data = ['sender' => '081234567890', 'message' => 'harga'];
+        $response = $this->postJson(route('webhook.fonnte.message'), $data, $this->webhookHeaders($data));
 
         $response->assertStatus(200);
 

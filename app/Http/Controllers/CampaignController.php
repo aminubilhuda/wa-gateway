@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Campaign;
 use App\Models\Contact;
+use App\Models\Device;
 use App\Models\MessageLog;
 use App\Models\MessageTemplate;
 use App\Services\FonnteService;
@@ -14,7 +15,7 @@ class CampaignController extends Controller
 {
     public function index()
     {
-        $campaigns = Campaign::orderBy('created_at', 'desc')->get();
+        $campaigns = Campaign::orderBy('created_at', 'desc')->paginate(10);
         $labels = Contact::whereNotNull('label')->where('label', '!=', '')->distinct()->pluck('label');
         $templates = MessageTemplate::orderBy('title', 'asc')->get();
 
@@ -207,10 +208,13 @@ class CampaignController extends Controller
                     ['name' => 'Recipient '.$number, 'label' => 'Imported']
                 );
 
+                $deviceDelay = Device::where('status', 'connected')
+                    ->value('delay_seconds') ?? Device::value('delay_seconds') ?? '1-3';
+
                 $item = [
                     'target' => $number,
                     'message' => $message,
-                    'delay' => '1-3',
+                    'delay' => $deviceDelay,
                 ];
 
                 if ($campaign->attachment_path) {
@@ -492,10 +496,13 @@ class CampaignController extends Controller
                     ['name' => 'Recipient '.$number, 'label' => 'Imported']
                 );
 
+                $deviceDelay = Device::where('status', 'connected')
+                    ->value('delay_seconds') ?? Device::value('delay_seconds') ?? '1-3';
+
                 $item = [
                     'target' => $number,
                     'message' => $message,
-                    'delay' => '1-3',
+                    'delay' => $deviceDelay,
                 ];
 
                 if ($campaign->attachment_path) {

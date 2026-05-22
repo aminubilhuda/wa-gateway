@@ -6,6 +6,7 @@ use App\Models\Contact;
 use App\Models\MessageLog;
 use App\Services\FonnteService;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ContactController extends Controller
 {
@@ -38,6 +39,45 @@ class ContactController extends Controller
             ->get();
 
         return view('contacts', compact('contacts', 'segments'));
+    }
+
+    public function exportCsv(Request $request)
+    {
+        $query = Contact::orderBy('created_at', 'desc');
+
+        if ($request->filled('search')) {
+            $q = $request->search;
+            $query->where(function ($sub) use ($q) {
+                $sub->where('name', 'like', "%{$q}%")
+                    ->orWhere('phone_number', 'like', "%{$q}%")
+                    ->orWhere('label', 'like', "%{$q}%");
+            });
+        }
+
+        if ($request->filled('label')) {
+            $query->where('label', $request->label);
+        }
+
+        $contacts = $query->get();
+
+        return StreamedResponse::create(function () use ($contacts) {
+            $handle = fopen('php://output', 'w');
+            fprintf($handle, "\xEF\xBB\xBF");
+            fputcsv($handle, ['Nomor', 'Nama', 'Label']);
+
+            foreach ($contacts as $contact) {
+                fputcsv($handle, [
+                    $contact->phone_number,
+                    $contact->name,
+                    $contact->label ?? '',
+                ]);
+            }
+
+            fclose($handle);
+        }, 200, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="contacts-export-'.now()->format('Y-m-d-His').'.csv"',
+        ]);
     }
 
     public function store(Request $request)
@@ -84,6 +124,7 @@ class ContactController extends Controller
             'name' => 'required|string|max:255',
             'phone_number' => 'required|string|max:20',
             'label' => 'nullable|string|max:255',
+            'is_active' => 'nullable|boolean',
         ]);
 
         $number = trim($validated['phone_number']);
@@ -102,6 +143,17 @@ class ContactController extends Controller
             'success' => true,
             'message' => 'Kontak berhasil diperbarui.',
             'contact' => $contact,
+        ]);
+    }
+
+    public function toggleActive(Contact $contact)
+    {
+        $contact->update(['is_active' => ! $contact->is_active]);
+
+        return response()->json([
+            'success' => true,
+            'is_active' => $contact->is_active,
+            'message' => $contact->is_active ? 'Kontak diaktifkan.' : 'Kontak dinonaktifkan.',
         ]);
     }
 

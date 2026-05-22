@@ -1,5 +1,6 @@
 const express = require('express');
 const { Client, LocalAuth } = require('whatsapp-web.js');
+const crypto = require('crypto');
 const qrcode = require('qrcode');
 const axios = require('axios');
 const path = require('path');
@@ -12,6 +13,13 @@ app.use(express.urlencoded({ extended: true }));
 
 const PORT = process.env.GATEWAY_PORT || 3000;
 const LARAVEL_WEBHOOK_URL = process.env.LARAVEL_WEBHOOK_URL || 'http://127.0.0.1:8000/webhook/fonnte';
+
+// Webhook signature helper
+function signPayload(payload) {
+    const secret = process.env.WEBHOOK_SECRET || '';
+    if (!secret) return '';
+    return crypto.createHmac('sha256', secret).update(payload).digest('hex');
+}
 
 // File logging helper
 const LOG_FILE = path.join(__dirname, 'gateway.log');
@@ -249,10 +257,13 @@ async function getOrCreateClient(token) {
         }
 
         // Notify Laravel about the successful connection
-        axios.post(`${LARAVEL_WEBHOOK_URL}/device`, {
-            status: 'connected',
-            token: token
-        }).catch(err => logToFile(`[Gateway] Failed to post connected webhook to Laravel: ${err.message}`));
+        (() => {
+            const payload = { status: 'connected', token };
+            const body = JSON.stringify(payload);
+            axios.post(`${LARAVEL_WEBHOOK_URL}/device`, payload, {
+                headers: { 'X-Webhook-Signature': signPayload(body) }
+            }).catch(err => logToFile(`[Gateway] Failed to post connected webhook to Laravel: ${err.message}`));
+        })();
     });
 
     client.on('disconnected', (reason) => {
@@ -261,10 +272,13 @@ async function getOrCreateClient(token) {
         logToFile(`[Gateway] Client disconnected for token: ${token.substring(0, 8)}... Reason: ${reason}`);
 
         // Notify Laravel about the disconnection
-        axios.post(`${LARAVEL_WEBHOOK_URL}/device`, {
-            status: 'disconnected',
-            token: token
-        }).catch(err => logToFile(`[Gateway] Failed to post disconnected webhook to Laravel: ${err.message}`));
+        (() => {
+            const payload = { status: 'disconnected', token };
+            const body = JSON.stringify(payload);
+            axios.post(`${LARAVEL_WEBHOOK_URL}/device`, payload, {
+                headers: { 'X-Webhook-Signature': signPayload(body) }
+            }).catch(err => logToFile(`[Gateway] Failed to post disconnected webhook to Laravel: ${err.message}`));
+        })();
 
         try {
             client.destroy();
@@ -286,7 +300,7 @@ async function getOrCreateClient(token) {
                 logToFile(`[Gateway] Forwarding message from ${cleanNumber} (${sender.isLid ? 'LID' : 'c.us'}): "${msg.body}" to ${LARAVEL_WEBHOOK_URL}/message`);
                 
                 try {
-                    const response = await axios.post(`${LARAVEL_WEBHOOK_URL}/message`, {
+                    const payload = {
                         sender: cleanNumber,
                         message: msg.body,
                         token: token,
@@ -294,6 +308,10 @@ async function getOrCreateClient(token) {
                         raw_sender: msg.from,
                         normalized_sender: sender.jid,
                         pushname: sender.pushname,
+                    };
+                    const body = JSON.stringify(payload);
+                    const response = await axios.post(`${LARAVEL_WEBHOOK_URL}/message`, payload, {
+                        headers: { 'X-Webhook-Signature': signPayload(body) }
                     });
                     logToFile(`[Gateway] Laravel webhook response: ${response.status} - ${JSON.stringify(response.data)}`);
                 } catch (err) {

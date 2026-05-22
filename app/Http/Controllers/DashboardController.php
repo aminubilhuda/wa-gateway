@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Campaign;
 use App\Models\Contact;
+use App\Models\Device;
 use App\Models\MessageLog;
 use App\Services\FonnteService;
 
@@ -21,21 +22,11 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
 
-        // Device / connection status
-        $deviceStatus = $fonnte->getDeviceStatus();
-        $isConnected = false;
-        $deviceNumber = '-';
-        $deviceQuota = '0';
-        $deviceStatusMsg = 'Disconnected';
+        // All devices from DB
+        $devices = Device::orderBy('created_at', 'desc')->get();
 
-        if (isset($deviceStatus['status']) && $deviceStatus['status'] == true) {
-            $deviceNumber = $deviceStatus['device'] ?? $deviceStatus['sender'] ?? '-';
-            $deviceQuota = $deviceStatus['quota'] ?? '0';
-            $deviceStatusMsg = ucfirst($deviceStatus['device_status'] ?? 'Connected');
-            if (strtolower($deviceStatusMsg) === 'connected' || strtolower($deviceStatusMsg) === 'connect') {
-                $isConnected = true;
-            }
-        }
+        $totalDevices = $devices->count();
+        $connectedDevices = $devices->where('status', 'connected')->count();
 
         // Weekly chart performance (last 7 days)
         $chartData = [];
@@ -69,10 +60,9 @@ class DashboardController extends Controller
             'successRate',
             'activeCampaigns',
             'recentLogs',
-            'isConnected',
-            'deviceNumber',
-            'deviceQuota',
-            'deviceStatusMsg',
+            'devices',
+            'totalDevices',
+            'connectedDevices',
             'chartData'
         ));
     }

@@ -133,28 +133,33 @@
 </head>
 <body class="text-on-background">
 
+    <!-- SIDEBAR TOGGLE (hidden checkbox) -->
+    <input type="checkbox" id="sidebarToggle" class="hidden peer" autocomplete="off">
+
+    <!-- OVERLAY for mobile sidebar -->
+    <label for="sidebarToggle" class="fixed inset-0 bg-black/50 z-30 hidden peer-checked:block lg:hidden cursor-pointer transition-opacity duration-300"></label>
+
     @include('components.sidebar')
 
     <!-- MAIN CONTENT WRAPPER -->
-    <main class="ml-[240px] min-h-screen">
-        
+    <main class="lg:ml-[240px] min-h-screenlg:pt-0">
+
         @include('components.header')
 
-        <!-- DASHBOARD CANVAS -->
-        <div class="p-lg space-y-lg">
+        <div class="p-3 sm:p-4 md:p-md lg:p-lg space-y-3 sm:space-y-4 md:space-y-md lg:space-y-lg">
             @yield('content')
         </div>
     </main>
-    
+
     <!-- FLOATING ACTION BUTTON -->
-    <button onclick="toggleSupportModal(true)" class="fixed bottom-lg right-lg w-14 h-14 bg-primary-container text-on-primary-container rounded-full shadow-lg flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-50">
-        <span class="material-symbols-outlined text-[28px]" data-icon="bolt" style="font-variation-settings: 'FILL' 1;">bolt</span>
+    <button onclick="toggleSupportModal(true)" class="fixed bottom-4 right-4 sm:bottom-lg sm:right-lg w-12 h-12 sm:w-14 sm:h-14 bg-primary-container text-on-primary-container rounded-full shadow-lg flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-50">
+        <span class="material-symbols-outlined text-[24px] sm:text-[28px]" data-icon="bolt" style="font-variation-settings: 'FILL' 1;">bolt</span>
     </button>
 
     <!-- SUPPORT MODAL -->
-    <div id="supportModal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-base transition-opacity duration-300">
-        <div class="bg-white rounded-xl shadow-xl w-full max-w-lg overflow-hidden border border-outline-variant transform transition-transform duration-300 scale-95">
-            <div class="px-lg py-md bg-secondary text-white flex justify-between items-center">
+    <div id="supportModal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-3 sm:p-base transition-opacity duration-300">
+        <div class="bg-white rounded-xl shadow-xl w-full max-w-lg overflow-hidden border border-outline-variant transform transition-transform duration-300 scale-95 mx-3 sm:mx-0">
+            <div class="px-4 sm:px-lg py-md bg-secondary text-white flex justify-between items-center">
                 <div class="flex items-center gap-xs">
                     <span class="material-symbols-outlined text-[24px]">support_agent</span>
                     <h3 class="font-headline-sm text-headline-sm font-bold">Help &amp; Customer Support</h3>
@@ -163,10 +168,10 @@
                     <span class="material-symbols-outlined">close</span>
                 </button>
             </div>
-            <div class="p-lg space-y-lg">
+            <div class="p-4 sm:p-lg space-y-4 sm:space-y-lg">
                 <p class="font-body-md text-on-surface-variant">Butuh bantuan menggunakan WA-Blast Pro? Tim teknis kami siap membantu Anda menyelesaikan masalah apa pun.</p>
-                
-                <div class="grid grid-cols-2 gap-md">
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-md">
                     <a href="https://wa.me/6281234567890" target="_blank" class="p-md border border-outline-variant hover:bg-surface-container rounded-xl flex flex-col items-center justify-center text-center gap-base transition-all group hover:border-primary">
                         <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
                             <span class="material-symbols-outlined text-[28px]" data-icon="chat">chat</span>
@@ -192,7 +197,7 @@
                     </ul>
                 </div>
             </div>
-            <div class="px-lg py-md border-t border-outline-variant bg-surface-container-lowest flex justify-end">
+            <div class="px-4 sm:px-lg py-md border-t border-outline-variant bg-surface-container-lowest flex justify-end">
                 <button type="button" onclick="toggleSupportModal(false)" class="px-md py-sm font-label-lg font-bold bg-primary text-white rounded-lg hover:shadow-md transition-shadow">Tutup</button>
             </div>
         </div>
@@ -217,7 +222,7 @@
             }
         }
     </script>
-    
+
     @stack('scripts')
 </body>
 </html>

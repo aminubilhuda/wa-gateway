@@ -1,0 +1,11 @@
+{
+    "agents": [
+        "opencode"
+    ],
+    "cloud": true,
+    "skills": [
+        "laravel-best-practices",
+        "tailwindcss-development",
+        "deploying-laravel-cloud"
+    ]
+}

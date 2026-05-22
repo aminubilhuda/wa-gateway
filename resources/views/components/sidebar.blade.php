@@ -1,8 +1,13 @@
 <!-- SIDE NAV BAR -->
-<aside class="w-[240px] h-screen fixed left-0 top-0 bg-secondary dark:bg-inverse-surface border-r border-outline-variant dark:border-outline flex flex-col p-md space-y-base z-50">
-    <div class="mb-xl px-base">
-        <h1 class="font-headline-md text-headline-md font-bold text-on-secondary">WA-Blast Pro</h1>
-        <p class="text-label-md text-on-secondary/70">Enterprise SaaS</p>
+<aside class="w-[240px] h-dvh overflow-y-auto fixed left-0 top-0 bg-secondary dark:bg-inverse-surface border-r border-outline-variant dark:border-outline flex flex-col px-md pb-md pt-0 space-y-base z-40 -translate-x-full peer-checked:translate-x-0 lg:translate-x-0 transition-transform duration-300 ease-in-out">
+    <div class="mb-xl px-base pt-md flex items-center justify-between">
+        <div>
+            <h1 class="font-headline-md text-headline-md font-bold text-on-secondary">WA-Blast Pro</h1>
+            <p class="text-label-md text-on-secondary/70">Enterprise SaaS</p>
+        </div>
+        <label for="sidebarToggle" class="lg:hidden text-on-secondary/70 hover:text-white transition-colors cursor-pointer p-1 -mr-1">
+            <span class="material-symbols-outlined">close</span>
+        </label>
     </div>
     <nav class="flex-1 space-y-xs">
         <a class="{{ request()->routeIs('dashboard') ? 'bg-primary-container text-on-primary-container' : 'text-on-secondary hover:bg-secondary-container/10' }} rounded-lg font-bold flex items-center gap-md p-md transition-transform duration-150 active:scale-95" href="{{ route('dashboard') }}">

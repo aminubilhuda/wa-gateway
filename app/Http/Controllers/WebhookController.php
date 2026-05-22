@@ -14,6 +14,24 @@ use Illuminate\Support\Facades\Log;
 
 class WebhookController extends Controller
 {
+    private function verifySignature(Request $request): bool
+    {
+        $secret = config('fonnte.webhook_secret');
+        if (! $secret) {
+            return true;
+        }
+
+        $signature = $request->header('X-Webhook-Signature');
+        if (! $signature) {
+            return false;
+        }
+
+        $payload = $request->getContent();
+        $expected = hash_hmac('sha256', $payload, $secret);
+
+        return hash_equals($expected, $signature);
+    }
+
     /**
      * Handle device status webhook from Fonnte
      */
@@ -24,6 +42,11 @@ class WebhookController extends Controller
                 'status' => 'active',
                 'message' => 'Fonnte Device Webhook is online and ready for GET/POST requests.',
             ]);
+        }
+
+        if (! $this->verifySignature($request)) {
+            Log::warning('Webhook device rejected: invalid signature', ['ip' => $request->ip()]);
+            return response()->json(['success' => false, 'message' => 'Invalid signature.'], 401);
         }
 
         $status = $request->input('status');
@@ -60,6 +83,11 @@ class WebhookController extends Controller
                 'status' => 'active',
                 'message' => 'Fonnte Message Webhook is online and ready for GET/POST requests.',
             ]);
+        }
+
+        if (! $this->verifySignature($request)) {
+            Log::warning('Webhook message rejected: invalid signature', ['ip' => $request->ip()]);
+            return response()->json(['success' => false, 'message' => 'Invalid signature.'], 401);
         }
 
         $sender = $request->input('sender');

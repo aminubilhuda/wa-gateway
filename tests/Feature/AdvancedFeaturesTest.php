@@ -105,10 +105,8 @@ class AdvancedFeaturesTest extends TestCase
         });
 
         // Trigger message webhook with 'stop'
-        $response = $this->post(route('webhook.fonnte.message'), [
-            'sender' => '081277777777',
-            'message' => 'stop',
-        ]);
+        $data = ['sender' => '081277777777', 'message' => 'stop'];
+        $response = $this->postJson(route('webhook.fonnte.message'), $data, $this->webhookHeaders($data));
 
         $response->assertStatus(200);
 

@@ -16,72 +16,72 @@
         @csrf
         <input type="hidden" name="_method" id="formMethod" value="POST">
     <!-- Page Header & Stepper -->
-    <div class="flex flex-col gap-lg mb-xl">
-        <div class="flex justify-between items-end">
+    <div class="flex flex-col gap-3 sm:gap-lg mb-3 sm:mb-xl">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-3 sm:gap-0">
             <div>
-                <h2 class="font-headline-lg text-headline-lg text-on-background" id="campaignHeaderTitle">Create New Campaign</h2>
-                <p class="text-on-surface-variant font-body-md">Broadcast high-impact messages to your audience in seconds.</p>
+                <h2 class="font-headline-lg-mobile lg:font-headline-lg text-headline-lg-mobile lg:text-headline-lg text-on-background" id="campaignHeaderTitle">Create New Campaign</h2>
+                <p class="text-on-surface-variant font-body-md text-sm sm:text-base">Broadcast high-impact messages to your audience in seconds.</p>
             </div>
-            <div class="flex gap-md">
-                <button type="button" id="cancelEditBtn" onclick="resetForm()" class="hidden px-lg py-sm border border-error text-error rounded-lg font-bold hover:bg-error/10 transition-colors active:scale-95">Batal Edit</button>
-                <button type="submit" id="submitBtn" class="px-lg py-sm bg-primary-container text-on-primary-container rounded-lg font-bold hover:brightness-95 transition-all active:scale-95 flex items-center gap-sm">
-                    <span class="material-symbols-outlined" id="submitIcon">send</span>
+            <div class="flex gap-2 sm:gap-md w-full sm:w-auto">
+                <button type="button" id="cancelEditBtn" onclick="resetForm()" class="hidden flex-1 sm:flex-none px-3 sm:px-lg py-1.5 sm:py-sm border border-error text-error rounded-lg font-bold hover:bg-error/10 transition-colors active:scale-95 text-xs sm:text-sm">Batal Edit</button>
+                <button type="submit" id="submitBtn" class="flex-1 sm:flex-none px-3 sm:px-lg py-1.5 sm:py-sm bg-primary-container text-on-primary-container rounded-lg font-bold hover:brightness-95 transition-all active:scale-95 flex items-center justify-center gap-1 sm:gap-sm text-xs sm:text-sm">
+                    <span class="material-symbols-outlined text-[16px] sm:text-[24px]" id="submitIcon">send</span>
                     <span id="submitText">Send Now</span>
                 </button>
             </div>
         </div>
 
         @if(session('success'))
-            <div class="bg-green-100 border border-green-400 text-green-700 px-lg py-md rounded-xl">
+            <div class="bg-green-100 border border-green-400 text-green-700 px-3 sm:px-lg py-2 sm:py-md rounded-xl text-xs sm:text-sm">
                 {{ session('success') }}
             </div>
         @endif
 
         @if(session('error'))
-            <div class="bg-red-100 border border-red-400 text-red-700 px-lg py-md rounded-xl">
+            <div class="bg-red-100 border border-red-400 text-red-700 px-3 sm:px-lg py-2 sm:py-md rounded-xl text-xs sm:text-sm">
                 {{ session('error') }}
             </div>
         @endif
         
         <!-- Wizard Stepper -->
-        <div class="flex items-center w-full max-w-4xl mx-auto py-md">
-            <div class="flex-1 flex flex-col items-center gap-xs">
-                <div class="w-10 h-10 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-bold">1</div>
-                <span class="font-label-md text-primary">Choose Audience</span>
+        <div class="flex items-center w-full max-w-4xl mx-auto py-2 sm:py-md">
+            <div class="flex-1 flex flex-col items-center gap-0.5 sm:gap-xs">
+                <div class="w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-bold text-[11px] sm:text-base">1</div>
+                <span class="text-[9px] sm:text-label-md text-primary text-center">Audience</span>
             </div>
-            <div class="h-px bg-primary-container flex-1 mb-6"></div>
-            <div class="flex-1 flex flex-col items-center gap-xs">
-                <div class="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold ring-4 ring-primary/20">2</div>
-                <span class="font-label-md font-bold text-on-surface">Compose Message</span>
+            <div class="h-px bg-primary-container flex-1 mt-3 sm:mt-5"></div>
+            <div class="flex-1 flex flex-col items-center gap-0.5 sm:gap-xs">
+                <div class="w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold text-[11px] sm:text-base ring-2 sm:ring-4 ring-primary/20">2</div>
+                <span class="text-[9px] sm:text-label-md font-bold text-on-surface text-center">Message</span>
             </div>
-            <div class="h-px bg-outline-variant flex-1 mb-6"></div>
-            <div class="flex-1 flex flex-col items-center gap-xs">
-                <div class="w-10 h-10 rounded-full bg-surface-container-high text-on-surface-variant flex items-center justify-center font-bold">3</div>
-                <span class="font-label-md text-on-surface-variant">Schedule</span>
+            <div class="h-px bg-outline-variant flex-1 mt-3 sm:mt-5"></div>
+            <div class="flex-1 flex flex-col items-center gap-0.5 sm:gap-xs">
+                <div class="w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-surface-container-high text-on-surface-variant flex items-center justify-center font-bold text-[11px] sm:text-base">3</div>
+                <span class="text-[9px] sm:text-label-md text-on-surface-variant text-center">Schedule</span>
             </div>
         </div>
     </div>
     
     <!-- Bento Grid Layout -->
-    <div class="grid grid-cols-12 gap-lg max-w-[1400px] mx-auto">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-lg max-w-[1400px] mx-auto">
         <!-- Left Forms Area (col-span-7) -->
-        <div class="col-span-12 lg:col-span-7 space-y-lg campaign-card">
+        <div class="lg:col-span-7 space-y-3 sm:space-y-lg campaign-card">
             
             <!-- Card 1: Choose Audience (No Tujuan) -->
-            <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg space-y-md">
-                <div class="flex items-center gap-md border-b border-outline-variant/30 pb-sm">
-                    <div class="p-xs bg-primary/10 text-primary rounded-lg flex items-center justify-center">
-                        <span class="material-symbols-outlined">group</span>
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-3 sm:p-lg space-y-3 sm:space-y-md">
+                <div class="flex items-center gap-2 sm:gap-md border-b border-outline-variant/30 pb-2 sm:pb-sm">
+                    <div class="p-1 sm:p-xs bg-primary/10 text-primary rounded-lg flex items-center justify-center">
+                        <span class="material-symbols-outlined text-[18px] sm:text-[24px]">group</span>
                     </div>
                     <div>
-                        <h3 class="font-bold text-headline-sm text-on-surface">1. Choose Audience (No Tujuan)</h3>
-                        <p class="text-label-sm text-on-surface-variant">Tentukan penerima pesan kampanye Anda.</p>
+                        <h3 class="font-bold text-[13px] sm:text-headline-sm text-on-surface">1. Choose Audience</h3>
+                        <p class="text-[10px] sm:text-label-sm text-on-surface-variant">Tentukan penerima pesan kampanye Anda.</p>
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-label-md text-on-surface-variant mb-xs">Sumber Penerima (No Tujuan)</label>
-                    <select name="target_type" id="targetTypeSelect" class="w-full bg-surface-container-low border border-outline-variant rounded-lg p-sm focus:ring-primary focus:border-primary text-body-md" onchange="onTargetTypeChange()">
+                    <label class="block text-[10px] sm:text-label-md text-on-surface-variant mb-1 sm:mb-xs">Sumber Penerima</label>
+                    <select name="target_type" id="targetTypeSelect" class="w-full bg-surface-container-low border border-outline-variant rounded-lg p-1.5 sm:p-sm focus:ring-primary focus:border-primary text-xs sm:text-body-md" onchange="onTargetTypeChange()">
                         <option value="all">Semua Kontak Database</option>
                         <option value="manual">Input Manual (Tulis Nomor)</option>
                         <option value="group">Berdasarkan Group/Label Kontak</option>
@@ -172,27 +172,27 @@
             </div>
 
             <!-- Card 2: Compose Message (Isi Pesan & Lampiran) -->
-            <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg">
-                <div class="flex items-center gap-md border-b border-outline-variant/30 pb-sm mb-md">
-                    <div class="p-xs bg-primary/10 text-primary rounded-lg flex items-center justify-center">
-                        <span class="material-symbols-outlined">chat</span>
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-3 sm:p-lg">
+                <div class="flex items-center gap-2 sm:gap-md border-b border-outline-variant/30 pb-2 sm:pb-sm mb-2 sm:mb-md">
+                    <div class="p-1 sm:p-xs bg-primary/10 text-primary rounded-lg flex items-center justify-center">
+                        <span class="material-symbols-outlined text-[18px] sm:text-[24px]">chat</span>
                     </div>
                     <div>
-                        <h3 class="font-bold text-headline-sm text-on-surface">2. Compose Message (Isi Pesan)</h3>
-                        <p class="text-label-sm text-on-surface-variant">Tulis isi pesan dan unggah lampiran media jika perlu.</p>
+                        <h3 class="font-bold text-[13px] sm:text-headline-sm text-on-surface">2. Compose Message</h3>
+                        <p class="text-[10px] sm:text-label-sm text-on-surface-variant">Tulis isi pesan dan unggah lampiran media jika perlu.</p>
                     </div>
                 </div>
 
                 <!-- Campaign / Schedule Name -->
-                <div class="mb-4">
-                    <label class="block text-label-md text-on-surface-variant mb-xs">Nama Jadwal / Kampanye</label>
-                    <input type="text" name="name" required class="w-full bg-surface-container-low border border-outline-variant rounded-lg p-sm focus:ring-primary focus:border-primary text-body-md" placeholder="e.g. Jadwal Kirim Promo Bulanan">
+                <div class="mb-3 sm:mb-4">
+                    <label class="block text-[10px] sm:text-label-md text-on-surface-variant mb-1 sm:mb-xs">Nama Jadwal / Kampanye</label>
+                    <input type="text" name="name" required class="w-full bg-surface-container-low border border-outline-variant rounded-lg p-1.5 sm:p-sm focus:ring-primary focus:border-primary text-xs sm:text-body-md" placeholder="e.g. Jadwal Kirim Promo Bulanan">
                 </div>
 
                 <!-- Choose Saved Template -->
-                <div class="mb-4">
-                    <label class="block text-label-md text-on-surface-variant mb-xs">Gunakan Templat Tersimpan (Opsional)</label>
-                    <select id="templateSelector" onchange="applyTemplate()" class="w-full bg-surface-container-low border border-outline-variant rounded-lg p-sm focus:ring-primary focus:border-primary text-body-md">
+                <div class="mb-3 sm:mb-4">
+                    <label class="block text-[10px] sm:text-label-md text-on-surface-variant mb-1 sm:mb-xs">Gunakan Templat (Opsional)</label>
+                    <select id="templateSelector" onchange="applyTemplate()" class="w-full bg-surface-container-low border border-outline-variant rounded-lg p-1.5 sm:p-sm focus:ring-primary focus:border-primary text-xs sm:text-body-md">
                         <option value="">-- Pilih Templat Pesan --</option>
                         @foreach($templates as $tpl)
                             <option value="{{ $tpl->message_body }}">{{ $tpl->title }}</option>
@@ -200,98 +200,86 @@
                     </select>
                 </div>
 
-                <!-- Variables Insert -->
-                <div class="flex justify-between items-center mb-xs">
-                    <label class="font-label-md text-on-surface-variant">Template Isi Pesan</label>
-                </div>
-
                 <!-- Editor Tools -->
-                <div class="flex flex-wrap gap-sm mb-md p-sm bg-surface-container-low rounded-lg border border-outline-variant/30">
-                    <button type="button" class="px-sm py-1 bg-surface-container-lowest border border-outline-variant rounded text-label-sm hover:border-primary transition-colors" onclick="insertVar('[Name]')">[Name]</button>
-                    <button type="button" class="px-sm py-1 bg-surface-container-lowest border border-outline-variant rounded text-label-sm hover:border-primary transition-colors" onclick="insertVar('[Order_ID]')">[Order_ID]</button>
-                    <button type="button" class="px-sm py-1 bg-surface-container-lowest border border-outline-variant rounded text-label-sm hover:border-primary transition-colors" onclick="insertVar('[Discount]')">[Discount]</button>
+                <div class="flex flex-wrap gap-1 sm:gap-sm mb-2 sm:mb-md p-1.5 sm:p-sm bg-surface-container-low rounded-lg border border-outline-variant/30">
+                    <button type="button" class="px-1.5 sm:px-sm py-0.5 sm:py-1 bg-surface-container-lowest border border-outline-variant rounded text-[10px] sm:text-label-sm hover:border-primary transition-colors" onclick="insertVar('[Name]')">[Name]</button>
+                    <button type="button" class="px-1.5 sm:px-sm py-0.5 sm:py-1 bg-surface-container-lowest border border-outline-variant rounded text-[10px] sm:text-label-sm hover:border-primary transition-colors" onclick="insertVar('[Order_ID]')">[Order_ID]</button>
+                    <button type="button" class="px-1.5 sm:px-sm py-0.5 sm:py-1 bg-surface-container-lowest border border-outline-variant rounded text-[10px] sm:text-label-sm hover:border-primary transition-colors" onclick="insertVar('[Discount]')">[Discount]</button>
                 </div>
 
                 <!-- Textarea -->
-                <textarea name="message_template" class="w-full h-48 bg-surface-container-low border border-outline-variant rounded-lg p-sm focus:ring-primary focus:border-primary font-body-md placeholder:text-on-surface-variant/40" id="messageEditor" placeholder="Tulis pesan WhatsApp Anda di sini... Gunakan variabel [Name] untuk personalisasi." required></textarea>
+                <textarea name="message_template" class="w-full h-32 sm:h-48 bg-surface-container-low border border-outline-variant rounded-lg p-1.5 sm:p-sm focus:ring-primary focus:border-primary font-body-md text-xs sm:text-sm placeholder:text-on-surface-variant/40" id="messageEditor" placeholder="Tulis pesan WhatsApp Anda di sini..." required></textarea>
 
                 <!-- Attachment Area -->
-                <div class="mt-lg pt-lg border-t border-outline-variant">
-                    <div class="flex items-center justify-between mb-sm">
-                        <span class="font-label-md text-on-surface-variant">Lampiran Media (Gambar, Video, Suara, File)</span>
-                        <span class="text-label-sm text-on-surface-variant/60">Maks 16MB</span>
+                <div class="mt-3 sm:mt-lg pt-3 sm:pt-lg border-t border-outline-variant">
+                    <div class="flex items-center justify-between mb-1 sm:mb-sm">
+                        <span class="text-[10px] sm:text-label-md text-on-surface-variant">Lampiran Media</span>
+                        <span class="text-[9px] sm:text-label-sm text-on-surface-variant/60">Maks 16MB</span>
                     </div>
                     
-                    <!-- File input hidden, triggered by click -->
-                    <div onclick="document.getElementById('attachmentInput').click()" class="border-2 border-dashed border-outline-variant rounded-xl p-md flex flex-col items-center justify-center gap-xs hover:bg-surface-container-low transition-colors cursor-pointer group">
+                    <div onclick="document.getElementById('attachmentInput').click()" class="border-2 border-dashed border-outline-variant rounded-xl p-3 sm:p-md flex flex-col items-center justify-center gap-1 sm:gap-xs hover:bg-surface-container-low transition-colors cursor-pointer group">
                         <input type="file" name="attachment" id="attachmentInput" class="hidden" onchange="handleAttachmentChange(this)">
-                        <span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors">cloud_upload</span>
-                        <p class="text-body-md text-on-surface-variant">Klik untuk mengunggah Lampiran</p>
-                        <span class="text-label-xs text-on-surface-variant/50">Dukung Gambar, Video, Suara (MP3), atau Dokumen PDF/Docx</span>
+                        <span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors text-[24px] sm:text-[36px]">cloud_upload</span>
+                        <p class="text-xs sm:text-body-md text-on-surface-variant text-center">Klik untuk mengunggah Lampiran</p>
+                        <span class="text-[9px] sm:text-label-xs text-on-surface-variant/50 text-center">Gambar, Video, Suara, atau Dokumen</span>
                     </div>
 
-                    <!-- File preview container -->
-                    <div id="attachmentPreviewContainer" class="hidden mt-sm p-sm bg-primary/10 rounded-lg flex items-center justify-between text-body-md text-primary font-medium">
-                        <div class="flex items-center gap-xs">
-                            <span class="material-symbols-outlined text-[18px]">draft</span>
-                            <span id="attachmentPreviewText">nama_file.jpg</span>
+                    <div id="attachmentPreviewContainer" class="hidden mt-1 sm:mt-sm p-1.5 sm:p-sm bg-primary/10 rounded-lg flex items-center justify-between text-xs sm:text-body-md text-primary font-medium">
+                        <div class="flex items-center gap-1 sm:gap-xs truncate">
+                            <span class="material-symbols-outlined text-[14px] sm:text-[18px]">draft</span>
+                            <span id="attachmentPreviewText" class="truncate">nama_file.jpg</span>
                         </div>
-                        <button type="button" class="text-error hover:text-error-hover" onclick="clearAttachment()">
-                            <span class="material-symbols-outlined text-[18px]">close</span>
+                        <button type="button" class="text-error hover:text-error-hover flex-shrink-0" onclick="clearAttachment()">
+                            <span class="material-symbols-outlined text-[14px] sm:text-[18px]">close</span>
                         </button>
                     </div>
                 </div>
             </div>
 
             <!-- Card 3: Scheduling Options (Jadwal Pengiriman) -->
-            <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg space-y-md">
-                <div class="flex items-center gap-md border-b border-outline-variant/30 pb-sm">
-                    <div class="p-xs bg-primary/10 text-primary rounded-lg flex items-center justify-center">
-                        <span class="material-symbols-outlined">schedule</span>
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-3 sm:p-lg space-y-3 sm:space-y-md">
+                <div class="flex items-center gap-2 sm:gap-md border-b border-outline-variant/30 pb-2 sm:pb-sm">
+                    <div class="p-1 sm:p-xs bg-primary/10 text-primary rounded-lg flex items-center justify-center">
+                        <span class="material-symbols-outlined text-[18px] sm:text-[24px]">schedule</span>
                     </div>
                     <div>
-                        <h3 class="font-bold text-headline-sm text-on-surface">3. Schedule (Jadwal Pengiriman)</h3>
-                        <p class="text-label-sm text-on-surface-variant">Tentukan tipe pengiriman terjadwal dan status aktif jadwal.</p>
+                        <h3 class="font-bold text-[13px] sm:text-headline-sm text-on-surface">3. Schedule</h3>
+                        <p class="text-[10px] sm:text-label-sm text-on-surface-variant">Tentukan tipe pengiriman terjadwal.</p>
                     </div>
                 </div>
 
-                <!-- Schedule Enable Toggle -->
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-md">
-                        <div>
-                            <p class="font-bold text-on-surface">Jadwalkan pengiriman?</p>
-                            <p class="text-label-sm text-on-surface-variant">Kirim otomatis di lain waktu dengan pola perulangan kustom.</p>
-                        </div>
+                <div class="flex items-center justify-between gap-3">
+                    <div class="flex-1 min-w-0">
+                        <p class="font-bold text-xs sm:text-sm text-on-surface">Jadwalkan pengiriman?</p>
+                        <p class="text-[10px] sm:text-label-sm text-on-surface-variant">Kirim otomatis di lain waktu.</p>
                     </div>
-                    <label class="relative inline-flex items-center cursor-pointer">
+                    <label class="relative inline-flex items-center cursor-pointer flex-shrink-0">
                         <input type="checkbox" name="is_scheduled" id="isScheduledCheckbox" class="sr-only peer" onchange="toggleScheduleInput()">
-                        <div class="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-outline-variant after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                        <div class="w-9 sm:w-11 h-5 sm:h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[1px] sm:after:top-[2px] after:left-[1px] sm:after:left-[2px] after:bg-white after:border-outline-variant after:border after:rounded-full after:h-4 sm:after:h-5 after:w-4 sm:after:w-5 after:transition-all peer-checked:bg-primary"></div>
                     </label>
                 </div>
 
-                <div id="scheduleTimeContainer" class="hidden pt-md border-t border-outline-variant/30 space-y-md">
+                <div id="scheduleTimeContainer" class="hidden pt-2 sm:pt-md border-t border-outline-variant/30 space-y-2 sm:space-y-md">
                     <div>
-                        <label class="block text-label-md text-on-surface-variant mb-xs">Jadwal Pengiriman</label>
-                        <select name="schedule_type" id="scheduleTypeSelect" class="w-full bg-surface-container-low border border-outline-variant rounded-lg p-sm focus:ring-primary focus:border-primary text-body-md" onchange="onScheduleTypeChange()">
+                        <label class="block text-[10px] sm:text-label-md text-on-surface-variant mb-1 sm:mb-xs">Jadwal Pengiriman</label>
+                        <select name="schedule_type" id="scheduleTypeSelect" class="w-full bg-surface-container-low border border-outline-variant rounded-lg p-1.5 sm:p-sm focus:ring-primary focus:border-primary text-xs sm:text-body-md" onchange="onScheduleTypeChange()">
                             <option value="once">Sekali Kirim (One-Time)</option>
                             <option value="daily">Kirim Setiap Hari (Daily)</option>
                             <option value="weekly">Kirim Setiap Minggu (Weekly)</option>
                             <option value="monthly">Kirim Setiap Bulan (Monthly)</option>
-                            <option value="minute">Kirim Setiap Beberapa Menit Sekali</option>
-                            <option value="hour">Kirim Setiap Beberapa Jam Sekali</option>
+                            <option value="minute">Kirim Setiap Beberapa Menit</option>
+                            <option value="hour">Kirim Setiap Beberapa Jam</option>
                         </select>
                     </div>
 
-                    <!-- Container for Once/One-Time -->
-                    <div id="onceScheduleContainer" class="space-y-sm">
-                        <label class="block text-label-md text-on-surface-variant mb-xs">Tanggal &amp; Waktu Pengiriman (WIB)</label>
-                        <input type="datetime-local" name="scheduled_at" id="scheduledAtInput" class="w-full bg-surface-container-low border border-outline-variant rounded-lg p-sm focus:ring-primary focus:border-primary text-body-md">
+                    <div id="onceScheduleContainer" class="space-y-1 sm:space-y-sm">
+                        <label class="block text-[10px] sm:text-label-md text-on-surface-variant mb-1 sm:mb-xs">Tanggal &amp; Waktu (WIB)</label>
+                        <input type="datetime-local" name="scheduled_at" id="scheduledAtInput" class="w-full bg-surface-container-low border border-outline-variant rounded-lg p-1.5 sm:p-sm focus:ring-primary focus:border-primary text-xs sm:text-body-md">
                     </div>
 
-                    <!-- Container for Weekly Day of Week -->
-                    <div id="weeklyScheduleContainer" class="hidden space-y-sm">
-                        <label class="block text-label-md text-on-surface-variant mb-xs">Pilih Hari (Setiap Minggu)</label>
-                        <select name="scheduled_day_of_week" id="scheduledDayOfWeekInput" class="w-full bg-surface-container-low border border-outline-variant rounded-lg p-sm focus:ring-primary focus:border-primary text-body-md">
+                    <div id="weeklyScheduleContainer" class="hidden space-y-1 sm:space-y-sm">
+                        <label class="block text-[10px] sm:text-label-md text-on-surface-variant mb-1 sm:mb-xs">Pilih Hari (Setiap Minggu)</label>
+                        <select name="scheduled_day_of_week" id="scheduledDayOfWeekInput" class="w-full bg-surface-container-low border border-outline-variant rounded-lg p-1.5 sm:p-sm focus:ring-primary focus:border-primary text-xs sm:text-body-md">
                             <option value="1">Senin</option>
                             <option value="2">Selasa</option>
                             <option value="3">Rabu</option>
@@ -302,37 +290,33 @@
                         </select>
                     </div>
 
-                    <!-- Container for Monthly Day of Month -->
-                    <div id="monthlyScheduleContainer" class="hidden space-y-sm">
-                        <label class="block text-label-md text-on-surface-variant mb-xs">Pilih Tanggal (1 - 31)</label>
-                        <select name="scheduled_day_of_month" id="scheduledDayOfMonthInput" class="w-full bg-surface-container-low border border-outline-variant rounded-lg p-sm focus:ring-primary focus:border-primary text-body-md">
+                    <div id="monthlyScheduleContainer" class="hidden space-y-1 sm:space-y-sm">
+                        <label class="block text-[10px] sm:text-label-md text-on-surface-variant mb-1 sm:mb-xs">Pilih Tanggal (1 - 31)</label>
+                        <select name="scheduled_day_of_month" id="scheduledDayOfMonthInput" class="w-full bg-surface-container-low border border-outline-variant rounded-lg p-1.5 sm:p-sm focus:ring-primary focus:border-primary text-xs sm:text-body-md">
                             @for($i = 1; $i <= 31; $i++)
                                 <option value="{{ $i }}">Tanggal {{ $i }}</option>
                             @endfor
                         </select>
                     </div>
 
-                    <!-- Container for Time (Used by Daily, Weekly, Monthly) -->
-                    <div id="timeScheduleContainer" class="hidden space-y-sm">
-                        <label class="block text-label-md text-on-surface-variant mb-xs">Jam Pengiriman (WIB)</label>
-                        <input type="time" name="scheduled_time" id="scheduledTimeInput" class="w-full bg-surface-container-low border border-outline-variant rounded-lg p-sm focus:ring-primary focus:border-primary text-body-md">
+                    <div id="timeScheduleContainer" class="hidden space-y-1 sm:space-y-sm">
+                        <label class="block text-[10px] sm:text-label-md text-on-surface-variant mb-1 sm:mb-xs">Jam Pengiriman (WIB)</label>
+                        <input type="time" name="scheduled_time" id="scheduledTimeInput" class="w-full bg-surface-container-low border border-outline-variant rounded-lg p-1.5 sm:p-sm focus:ring-primary focus:border-primary text-xs sm:text-body-md">
                     </div>
 
-                    <!-- Container for Interval (Used by Minute, Hour) -->
-                    <div id="intervalScheduleContainer" class="hidden space-y-sm">
-                        <label class="block text-label-md text-on-surface-variant mb-xs" id="intervalValueLabel">Durasi Interval</label>
-                        <input type="number" name="interval_value" id="intervalValueInput" min="1" class="w-full bg-surface-container-low border border-outline-variant rounded-lg p-sm focus:ring-primary focus:border-primary text-body-md" placeholder="e.g. 15">
+                    <div id="intervalScheduleContainer" class="hidden space-y-1 sm:space-y-sm">
+                        <label class="block text-[10px] sm:text-label-md text-on-surface-variant mb-1 sm:mb-xs" id="intervalValueLabel">Durasi Interval</label>
+                        <input type="number" name="interval_value" id="intervalValueInput" min="1" class="w-full bg-surface-container-low border border-outline-variant rounded-lg p-1.5 sm:p-sm focus:ring-primary focus:border-primary text-xs sm:text-body-md" placeholder="e.g. 15">
                     </div>
 
-                    <!-- Active Schedule Switch (Aktifkan Jadwal) -->
-                    <div class="flex items-center justify-between pt-sm border-t border-outline-variant/30">
-                        <div>
-                            <p class="font-bold text-on-surface">Aktifkan Jadwal?</p>
-                            <p class="text-label-sm text-on-surface-variant">Jadwal ini akan aktif dan diproses otomatis oleh scheduler.</p>
+                    <div class="flex items-center justify-between gap-3 pt-1 sm:pt-sm border-t border-outline-variant/30">
+                        <div class="flex-1 min-w-0">
+                            <p class="font-bold text-xs sm:text-sm text-on-surface">Aktifkan Jadwal?</p>
+                            <p class="text-[10px] sm:text-label-sm text-on-surface-variant">Diproses otomatis oleh scheduler.</p>
                         </div>
-                        <label class="relative inline-flex items-center cursor-pointer">
+                        <label class="relative inline-flex items-center cursor-pointer flex-shrink-0">
                             <input type="checkbox" name="is_active" id="isActiveCheckbox" class="sr-only peer" checked>
-                            <div class="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-outline-variant after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#22c55e]"></div>
+                            <div class="w-9 sm:w-11 h-5 sm:h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[1px] sm:after:top-[2px] after:left-[1px] sm:after:left-[2px] after:bg-white after:border-outline-variant after:border after:rounded-full after:h-4 sm:after:h-5 after:w-4 sm:after:w-5 after:transition-all peer-checked:bg-[#22c55e]"></div>
                         </label>
                     </div>
                 </div>
@@ -340,14 +324,14 @@
         </div>
         
         <!-- Live Preview Area -->
-        <div class="col-span-12 lg:col-span-5 campaign-card">
-            <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg h-full">
-                <div class="flex items-center gap-sm mb-lg border-b border-outline-variant pb-md">
-                    <span class="material-symbols-outlined text-primary">visibility</span>
-                    <h3 class="font-headline-md text-headline-md text-on-surface">Live Preview</h3>
+        <div class="lg:col-span-5 campaign-card">
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-3 sm:p-lg h-full">
+                <div class="flex items-center gap-1 sm:gap-sm mb-2 sm:mb-lg border-b border-outline-variant pb-2 sm:pb-md">
+                    <span class="material-symbols-outlined text-primary text-[18px] sm:text-[24px]">visibility</span>
+                    <h3 class="font-headline-md text-headline-md text-sm sm:text-base text-on-surface">Live Preview</h3>
                 </div>
                 <!-- WhatsApp Simulation -->
-                <div class="bg-[#e5ddd5] rounded-2xl overflow-hidden shadow-inner border border-black/5 aspect-[9/16] max-h-[600px] flex flex-col mx-auto max-w-[320px]">
+                <div class="bg-[#e5ddd5] rounded-2xl overflow-hidden shadow-inner border border-black/5 aspect-[3/4] sm:aspect-[9/16] max-h-[500px] lg:max-h-[600px] flex flex-col mx-auto max-w-[240px] sm:max-w-[320px]">
                     <!-- Chat Header -->
                     <div class="bg-[#075e54] p-sm flex items-center gap-sm">
                         <span class="material-symbols-outlined text-white text-[20px]">arrow_back</span>
@@ -392,121 +376,116 @@
     </form>
 
     <!-- Campaigns List Section -->
-    <div class="max-w-[1400px] mx-auto mt-xl">
+    <div class="max-w-[1400px] mx-auto mt-3 sm:mt-xl">
         <div class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm">
-            <div class="p-lg border-b border-outline-variant bg-surface-container-low flex justify-between items-center">
+            <div class="p-3 sm:p-lg border-b border-outline-variant bg-surface-container-low flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
                 <div>
-                    <h3 class="font-headline-md text-headline-md text-on-surface">Campaign History &amp; Schedules</h3>
-                    <p class="text-body-sm text-on-surface-variant">Track your sent and upcoming scheduled broadcasts.</p>
+                    <h3 class="font-headline-md text-headline-md text-sm sm:text-base text-on-surface">Campaign History</h3>
+                    <p class="text-[11px] sm:text-body-sm text-on-surface-variant">Track your sent and upcoming scheduled broadcasts.</p>
                 </div>
-                <div class="flex items-center gap-xs">
-                    <span class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span>
-                    <span class="text-label-md text-on-surface-variant font-bold">WIB (Asia/Jakarta)</span>
+                <div class="flex items-center gap-1 sm:gap-xs">
+                    <span class="w-2 sm:w-2.5 h-2 sm:h-2.5 rounded-full bg-amber-500 animate-pulse"></span>
+                    <span class="text-[10px] sm:text-label-md text-on-surface-variant font-bold">WIB</span>
                 </div>
             </div>
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
+            <div class="overflow-x-auto overflow-y-hidden">
+                <table class="w-full text-left border-collapse min-w-[600px]">
                     <thead>
-                        <tr class="bg-surface-container-low/50 text-label-sm text-outline border-b border-outline-variant">
-                            <th class="px-lg py-4 font-semibold uppercase tracking-wider">Campaign Name</th>
-                            <th class="px-lg py-4 font-semibold uppercase tracking-wider">Message Preview</th>
-                            <th class="px-lg py-4 font-semibold uppercase tracking-wider">Schedule Time</th>
-                            <th class="px-lg py-4 font-semibold uppercase tracking-wider">Status</th>
-                            <th class="px-lg py-4 font-semibold uppercase tracking-wider">Aktif</th>
-                            <th class="px-lg py-4 font-semibold uppercase tracking-wider">Created At</th>
-                            <th class="px-lg py-4 font-semibold uppercase tracking-wider text-right">Actions</th>
+                        <tr class="bg-surface-container-low/50 text-[10px] sm:text-label-sm text-outline border-b border-outline-variant">
+                            <th class="px-2 sm:px-lg py-2 sm:py-4 font-semibold uppercase tracking-wider">Name</th>
+                            <th class="px-2 sm:px-lg py-2 sm:py-4 font-semibold uppercase tracking-wider">Message</th>
+                            <th class="px-2 sm:px-lg py-2 sm:py-4 font-semibold uppercase tracking-wider">Schedule</th>
+                            <th class="px-2 sm:px-lg py-2 sm:py-4 font-semibold uppercase tracking-wider">Status</th>
+                            <th class="px-2 sm:px-lg py-2 sm:py-4 font-semibold uppercase tracking-wider">Aktif</th>
+                            <th class="px-2 sm:px-lg py-2 sm:py-4 font-semibold uppercase tracking-wider">Created</th>
+                            <th class="px-2 sm:px-lg py-2 sm:py-4 font-semibold uppercase tracking-wider text-right">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-outline-variant">
                         @forelse($campaigns as $campaign)
                         <tr class="hover:bg-background/50 transition-colors" id="campaign-row-{{ $campaign->id }}">
-                            <td class="px-lg py-md font-label-md text-on-surface font-semibold">{{ $campaign->name }}</td>
-                            <td class="px-lg py-md text-body-md text-on-surface-variant/80 max-w-xs truncate" title="{{ $campaign->message_template }}">{{ $campaign->message_template }}</td>
-                            <td class="px-lg py-md whitespace-nowrap text-body-md text-on-surface">
+                            <td class="px-2 sm:px-lg py-1.5 sm:py-md text-[11px] sm:text-label-md text-on-surface font-semibold">{{ $campaign->name }}</td>
+                            <td class="px-2 sm:px-lg py-1.5 sm:py-md text-[11px] sm:text-body-md text-on-surface-variant/80 max-w-[80px] sm:max-w-xs truncate" title="{{ $campaign->message_template }}">{{ $campaign->message_template }}</td>
+                            <td class="px-2 sm:px-lg py-1.5 sm:py-md whitespace-nowrap text-[11px] sm:text-body-md text-on-surface">
                                 @if($campaign->schedule_type === 'once' && $campaign->scheduled_at)
-                                    <div class="flex items-center gap-xs text-primary font-medium">
-                                        <span class="material-symbols-outlined text-[18px]">calendar_month</span>
-                                        <span>{{ \Carbon\Carbon::parse($campaign->scheduled_at)->format('d M Y H:i') }} WIB</span>
+                                    <div class="flex items-center gap-0.5 sm:gap-xs text-primary font-medium">
+                                        <span class="material-symbols-outlined text-[14px] sm:text-[18px]">calendar_month</span>
+                                        <span>{{ \Carbon\Carbon::parse($campaign->scheduled_at)->format('d M Y H:i') }}</span>
                                     </div>
                                 @elseif($campaign->schedule_type === 'daily' && $campaign->scheduled_time)
-                                    <div class="flex items-center gap-xs text-indigo-600 font-medium">
-                                        <span class="material-symbols-outlined text-[18px]">today</span>
-                                        <span>Setiap Hari, {{ $campaign->scheduled_time }} WIB</span>
+                                    <div class="flex items-center gap-0.5 sm:gap-xs text-indigo-600 font-medium">
+                                        <span class="material-symbols-outlined text-[14px] sm:text-[18px]">today</span>
+                                        <span>Daily {{ $campaign->scheduled_time }}</span>
                                     </div>
                                 @elseif($campaign->schedule_type === 'weekly' && $campaign->scheduled_time)
-                                    @php
-                                        $days = [1 => 'Senin', 2 => 'Selasa', 3 => 'Rabu', 4 => 'Kamis', 5 => 'Jumat', 6 => 'Sabtu', 7 => 'Minggu'];
-                                    @endphp
-                                    <div class="flex items-center gap-xs text-purple-600 font-medium">
-                                        <span class="material-symbols-outlined text-[18px]">calendar_view_week</span>
-                                        <span>Setiap {{ $days[$campaign->scheduled_day_of_week] ?? 'Hari' }}, {{ $campaign->scheduled_time }} WIB</span>
+                                    @php $days = [1 => 'Senin', 2 => 'Selasa', 3 => 'Rabu', 4 => 'Kamis', 5 => 'Jumat', 6 => 'Sabtu', 7 => 'Minggu']; @endphp
+                                    <div class="flex items-center gap-0.5 sm:gap-xs text-purple-600 font-medium">
+                                        <span class="material-symbols-outlined text-[14px] sm:text-[18px]">calendar_view_week</span>
+                                        <span>{{ $days[$campaign->scheduled_day_of_week] ?? '' }} {{ $campaign->scheduled_time }}</span>
                                     </div>
                                 @elseif($campaign->schedule_type === 'monthly' && $campaign->scheduled_time)
-                                    <div class="flex items-center gap-xs text-pink-600 font-medium">
-                                        <span class="material-symbols-outlined text-[18px]">calendar_month</span>
-                                        <span>Setiap Tgl {{ $campaign->scheduled_day_of_month }}, {{ $campaign->scheduled_time }} WIB</span>
+                                    <div class="flex items-center gap-0.5 sm:gap-xs text-pink-600 font-medium">
+                                        <span class="material-symbols-outlined text-[14px] sm:text-[18px]">calendar_month</span>
+                                        <span>Tgl {{ $campaign->scheduled_day_of_month }}</span>
                                     </div>
                                 @elseif($campaign->schedule_type === 'minute' && $campaign->interval_value)
-                                    <div class="flex items-center gap-xs text-teal-600 font-medium">
-                                        <span class="material-symbols-outlined text-[18px]">timelapse</span>
-                                        <span>Setiap {{ $campaign->interval_value }} Menit</span>
+                                    <div class="flex items-center gap-0.5 sm:gap-xs text-teal-600 font-medium">
+                                        <span class="material-symbols-outlined text-[14px] sm:text-[18px]">timelapse</span>
+                                        <span>Setiap {{ $campaign->interval_value }} mnt</span>
                                     </div>
                                 @elseif($campaign->schedule_type === 'hour' && $campaign->interval_value)
-                                    <div class="flex items-center gap-xs text-orange-600 font-medium">
-                                        <span class="material-symbols-outlined text-[18px]">hourglass_empty</span>
-                                        <span>Setiap {{ $campaign->interval_value }} Jam</span>
+                                    <div class="flex items-center gap-0.5 sm:gap-xs text-orange-600 font-medium">
+                                        <span class="material-symbols-outlined text-[14px] sm:text-[18px]">hourglass_empty</span>
+                                        <span>Setiap {{ $campaign->interval_value }} jam</span>
                                     </div>
                                 @else
-                                    <span class="text-outline/70">Immediate / Sent Now</span>
+                                    <span class="text-outline/70">Sent Now</span>
                                 @endif
                             </td>
-                            <td class="px-lg py-md">
+                            <td class="px-2 sm:px-lg py-1.5 sm:py-md">
                                 @if($campaign->status === 'scheduled')
-                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-label-sm font-bold">
-                                        <span class="material-symbols-outlined text-[16px] animate-pulse">schedule</span>
+                                    <span class="inline-flex items-center gap-1 px-1.5 sm:px-3 py-0.5 sm:py-1 bg-amber-100 text-amber-800 rounded-full text-[9px] sm:text-label-sm font-bold whitespace-nowrap">
+                                        <span class="material-symbols-outlined text-[12px] sm:text-[16px] animate-pulse">schedule</span>
                                         Scheduled
                                     </span>
                                 @elseif($campaign->status === 'running')
-                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-label-sm font-bold">
-                                        <span class="material-symbols-outlined text-[16px] animate-spin">sync</span>
+                                    <span class="inline-flex items-center gap-1 px-1.5 sm:px-3 py-0.5 sm:py-1 bg-blue-100 text-blue-800 rounded-full text-[9px] sm:text-label-sm font-bold whitespace-nowrap">
+                                        <span class="material-symbols-outlined text-[12px] sm:text-[16px] animate-spin">sync</span>
                                         Running
                                     </span>
                                 @elseif($campaign->status === 'completed')
-                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-green-100 text-green-800 rounded-full text-label-sm font-bold">
-                                        <span class="material-symbols-outlined text-[16px]">check_circle</span>
-                                        Completed
+                                    <span class="inline-flex items-center gap-1 px-1.5 sm:px-3 py-0.5 sm:py-1 bg-green-100 text-green-800 rounded-full text-[9px] sm:text-label-sm font-bold whitespace-nowrap">
+                                        <span class="material-symbols-outlined text-[12px] sm:text-[16px]">check_circle</span>
+                                        Done
                                     </span>
                                 @elseif($campaign->status === 'failed')
-                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-red-100 text-red-800 rounded-full text-label-sm font-bold">
-                                        <span class="material-symbols-outlined text-[16px]">error</span>
+                                    <span class="inline-flex items-center gap-1 px-1.5 sm:px-3 py-0.5 sm:py-1 bg-red-100 text-red-800 rounded-full text-[9px] sm:text-label-sm font-bold whitespace-nowrap">
+                                        <span class="material-symbols-outlined text-[12px] sm:text-[16px]">error</span>
                                         Failed
                                     </span>
                                 @else
-                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-label-sm font-bold">
+                                    <span class="inline-flex items-center gap-1 px-1.5 sm:px-3 py-0.5 sm:py-1 bg-gray-100 text-gray-800 rounded-full text-[9px] sm:text-label-sm font-bold whitespace-nowrap">
                                         {{ ucfirst($campaign->status) }}
                                     </span>
                                 @endif
                             </td>
-                            <td class="px-lg py-md">
+                            <td class="px-2 sm:px-lg py-1.5 sm:py-md">
                                 <label class="relative inline-flex items-center cursor-pointer">
                                     <input class="sr-only campaign-toggle-switch" type="checkbox" data-id="{{ $campaign->id }}" {{ $campaign->is_active ? 'checked' : '' }}/>
-                                    <div class="w-10 h-5 bg-outline-variant rounded-full transition-all campaign-toggle-slider relative before:content-[''] before:absolute before:top-[2px] before:left-[2px] before:bg-white before:rounded-full before:h-4 before:w-4 before:transition-all"></div>
+                                    <div class="w-7 sm:w-10 h-3.5 sm:h-5 bg-outline-variant rounded-full transition-all campaign-toggle-slider relative before:content-[''] before:absolute before:top-[1px] sm:before:top-[2px] before:left-[1px] sm:before:left-[2px] before:bg-white before:rounded-full before:h-2.5 sm:before:h-4 before:w-2.5 sm:before:w-4 before:transition-all"></div>
                                 </label>
                             </td>
-                            <td class="px-lg py-md whitespace-nowrap text-label-sm text-outline">{{ $campaign->created_at->format('d M Y, H:i') }} WIB</td>
-                            <td class="px-lg py-md text-right">
-                                <div class="flex justify-end items-center gap-xs">
-                                    <!-- Edit Button -->
-                                    <button type="button" onclick="editCampaign({{ json_encode($campaign) }})" class="p-xs text-primary hover:bg-primary/10 rounded transition-colors" title="Edit Schedule">
-                                        <span class="material-symbols-outlined text-[20px]">edit</span>
+                            <td class="px-2 sm:px-lg py-1.5 sm:py-md whitespace-nowrap text-[10px] sm:text-label-sm text-outline">{{ $campaign->created_at->format('d M') }}</td>
+                            <td class="px-2 sm:px-lg py-1.5 sm:py-md text-right">
+                                <div class="flex justify-end items-center gap-0.5 sm:gap-xs">
+                                    <button type="button" onclick="editCampaign({{ json_encode($campaign) }})" class="p-0.5 sm:p-xs text-primary hover:bg-primary/10 rounded transition-colors" title="Edit Schedule">
+                                        <span class="material-symbols-outlined text-[16px] sm:text-[20px]">edit</span>
                                     </button>
-                                    
-                                    <!-- Delete Button -->
                                     <form action="{{ route('campaigns.destroy', $campaign->id) }}" method="POST" class="delete-campaign-form inline" data-id="{{ $campaign->id }}">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="p-xs text-outline hover:text-error hover:bg-error-container/20 rounded transition-colors" title="Delete Schedule">
-                                            <span class="material-symbols-outlined text-[20px]">delete</span>
+                                        <button type="submit" class="p-0.5 sm:p-xs text-outline hover:text-error hover:bg-error-container/20 rounded transition-colors" title="Delete Schedule">
+                                            <span class="material-symbols-outlined text-[16px] sm:text-[20px]">delete</span>
                                         </button>
                                     </form>
                                 </div>
@@ -514,12 +493,45 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="7" class="px-lg py-md text-center text-on-surface-variant">Belum ada kampanye yang dibuat.</td>
+                            <td colspan="7" class="px-2 sm:px-lg py-1.5 sm:py-md text-center text-on-surface-variant text-xs">Belum ada kampanye.</td>
                         </tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
+
+            @if ($campaigns->hasPages())
+            <div class="p-2 sm:p-md bg-surface-container-low border-t border-outline-variant flex flex-col sm:flex-row items-center justify-between gap-2">
+                <span class="text-[10px] sm:text-label-md text-on-surface-variant">Showing {{ $campaigns->firstItem() ?? 0 }} to {{ $campaigns->lastItem() ?? 0 }} of {{ $campaigns->total() }} campaigns</span>
+                <div class="flex items-center gap-1 sm:space-x-xs">
+                    @if ($campaigns->onFirstPage())
+                        <button class="p-0.5 sm:p-xs border border-outline-variant rounded-md text-outline opacity-50 cursor-not-allowed" disabled>
+                            <span class="material-symbols-outlined text-[16px] sm:text-[24px]">chevron_left</span>
+                        </button>
+                    @else
+                        <a href="{{ $campaigns->previousPageUrl() }}" class="p-0.5 sm:p-xs border border-outline-variant rounded-md hover:bg-white text-outline flex items-center">
+                            <span class="material-symbols-outlined text-[16px] sm:text-[24px]">chevron_left</span>
+                        </a>
+                    @endif
+                    @foreach ($campaigns->getUrlRange(max(1, $campaigns->currentPage() - 2), min($campaigns->lastPage(), $campaigns->currentPage() + 2)) as $page => $url)
+                        @if ($page == $campaigns->currentPage())
+                            <button class="w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center bg-primary text-on-primary rounded-md font-bold text-[10px] sm:text-label-md">{{ $page }}</button>
+                        @else
+                            <a href="{{ $url }}" class="w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center border border-outline-variant rounded-md hover:bg-white text-on-surface text-[10px] sm:text-label-md">{{ $page }}</a>
+                        @endif
+                    @endforeach
+                    @if ($campaigns->hasMorePages())
+                        <a href="{{ $campaigns->nextPageUrl() }}" class="p-0.5 sm:p-xs border border-outline-variant rounded-md hover:bg-white text-outline flex items-center">
+                            <span class="material-symbols-outlined text-[16px] sm:text-[24px]">chevron_right</span>
+                        </a>
+                    @else
+                        <button class="p-0.5 sm:p-xs border border-outline-variant rounded-md text-outline opacity-50 cursor-not-allowed" disabled>
+                            <span class="material-symbols-outlined text-[16px] sm:text-[24px]">chevron_right</span>
+                        </button>
+                    @endif
+                </div>
+            </div>
+            @endif
         </div>
     </div>
 @endsection

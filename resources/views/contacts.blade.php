@@ -2,19 +2,23 @@
 
 @section('content')
     <!-- Header Actions Section -->
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-md mb-lg">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-md mb-3 sm:mb-lg">
         <div>
-            <h3 class="font-headline-lg text-headline-lg text-on-background">Contact Management</h3>
-            <p class="text-body-md text-on-surface-variant">Manage and segment your audience for targeted messaging.</p>
+            <h3 class="font-headline-lg-mobile lg:font-headline-lg text-headline-lg-mobile lg:text-headline-lg text-on-background">Contact Management</h3>
+            <p class="text-body-md text-body-md text-on-surface-variant">Manage and segment your audience for targeted messaging.</p>
         </div>
-        <div class="flex items-center space-x-sm">
-            <button onclick="document.getElementById('importContactsModal').classList.remove('hidden')" class="px-md py-sm bg-surface-container-lowest border border-outline-variant text-secondary font-bold rounded-lg flex items-center space-x-xs hover:bg-surface-container-low active:scale-95 transition-all">
-                <span class="material-symbols-outlined text-[20px]">upload_file</span>
-                <span>Import Excel/CSV</span>
+        <div class="flex flex-wrap items-center gap-2 sm:space-x-sm">
+            <button onclick="window.location.href='{{ route('contacts.export', request()->all()) }}'" class="px-2 sm:px-md py-1.5 sm:py-sm bg-surface-container-lowest border border-outline-variant text-secondary font-bold rounded-lg flex items-center gap-1 sm:space-x-xs hover:bg-surface-container-low active:scale-95 transition-all text-xs sm:text-sm">
+                <span class="material-symbols-outlined text-[16px] sm:text-[20px]">download</span>
+                <span class="hidden xs:inline">Export CSV</span>
             </button>
-            <button onclick="document.getElementById('addContactModal').classList.remove('hidden')" class="px-md py-sm bg-primary text-on-primary font-bold rounded-lg flex items-center space-x-xs hover:bg-on-primary-fixed-variant active:scale-95 transition-all shadow-sm">
-                <span class="material-symbols-outlined text-[20px]">person_add</span>
-                <span>Add Contact</span>
+            <button onclick="document.getElementById('importContactsModal').classList.remove('hidden')" class="px-2 sm:px-md py-1.5 sm:py-sm bg-surface-container-lowest border border-outline-variant text-secondary font-bold rounded-lg flex items-center gap-1 sm:space-x-xs hover:bg-surface-container-low active:scale-95 transition-all text-xs sm:text-sm">
+                <span class="material-symbols-outlined text-[16px] sm:text-[20px]">upload_file</span>
+                <span class="hidden xs:inline">Import</span>
+            </button>
+            <button onclick="document.getElementById('addContactModal').classList.remove('hidden')" class="px-2 sm:px-md py-1.5 sm:py-sm bg-primary text-on-primary font-bold rounded-lg flex items-center gap-1 sm:space-x-xs hover:bg-on-primary-fixed-variant active:scale-95 transition-all shadow-sm text-xs sm:text-sm">
+                <span class="material-symbols-outlined text-[16px] sm:text-[20px]">person_add</span>
+                <span class="hidden xs:inline">Add Contact</span>
             </button>
         </div>
     </div>
@@ -32,14 +36,14 @@
     @endif
     
     <!-- Search & Filter Bar -->
-    <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md mb-md shadow-sm">
-        <form action="{{ route('contacts') }}" method="GET" class="flex flex-col md:flex-row gap-sm items-center w-full">
+    <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-3 sm:p-md mb-3 sm:mb-md shadow-sm">
+        <form action="{{ route('contacts') }}" method="GET" class="flex flex-col sm:flex-row gap-2 sm:gap-sm items-stretch sm:items-center w-full">
             <div class="relative flex-1 w-full">
                 <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
-                <input class="w-full pl-10 pr-4 py-2 bg-surface-container-low border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary/20 outline-none transition-all font-body-md" placeholder="Cari nama, nomor, atau grup..." name="search" value="{{ request('search') }}" type="text" onchange="this.form.submit()"/>
+                <input class="w-full pl-10 pr-4 py-1.5 sm:py-2 bg-surface-container-low border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary/20 outline-none transition-all font-body-md text-sm" placeholder="Cari nama, nomor, atau grup..." name="search" value="{{ request('search') }}" type="text" onchange="this.form.submit()"/>
             </div>
-            <div class="w-full md:w-64">
-                <select name="label" onchange="this.form.submit()" class="w-full bg-surface-container-low border border-outline-variant rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-primary/20 text-body-md cursor-pointer">
+            <div class="w-full sm:w-48 lg:w-64">
+                <select name="label" onchange="this.form.submit()" class="w-full bg-surface-container-low border border-outline-variant rounded-lg px-3 py-1.5 sm:py-2 outline-none focus:ring-2 focus:ring-primary/20 text-body-md text-sm cursor-pointer">
                     <option value="">Semua Grup/Label</option>
                     @foreach($segments as $seg)
                         <option value="{{ $seg->label }}" {{ request('label') == $seg->label ? 'selected' : '' }}>{{ $seg->label }} ({{ $seg->total }})</option>
@@ -47,7 +51,7 @@
                 </select>
             </div>
             @if(request()->filled('search') || request()->filled('label'))
-                <a href="{{ route('contacts') }}" class="px-md py-sm bg-secondary-container/30 border border-secondary-container text-on-secondary-container font-label-md rounded-lg hover:bg-secondary-container/50 transition-all flex items-center justify-center gap-xs">
+                <a href="{{ route('contacts') }}" class="px-3 sm:px-md py-1.5 sm:py-sm bg-secondary-container/30 border border-secondary-container text-on-secondary-container font-label-md rounded-lg hover:bg-secondary-container/50 transition-all flex items-center justify-center gap-xs text-sm whitespace-nowrap">
                     <span class="material-symbols-outlined text-[16px]">refresh</span>
                     <span>Reset</span>
                 </a>
@@ -56,85 +60,92 @@
     </div>
     
     <!-- Bulk Action & Filter Bar -->
-    <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md mb-md flex items-center justify-between opacity-0 translate-y-2 pointer-events-none transition-all duration-300" id="bulkActions">
-        <div class="flex items-center space-x-lg">
-            <span class="text-body-md font-bold text-primary"><span id="selectedCount">0</span> Contacts Selected</span>
-            <div class="h-6 w-[1px] bg-outline-variant"></div>
-            <div class="flex items-center space-x-sm">
-                <button onclick="bulkDeleteContacts()" class="px-sm py-xs text-on-surface-variant hover:text-error hover:bg-error-container/20 rounded-md transition-colors flex items-center space-x-xs">
-                    <span class="material-symbols-outlined text-[18px]">delete</span>
-                    <span class="text-label-md">Delete</span>
+    <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-2 sm:p-md mb-3 sm:mb-md flex flex-wrap items-center justify-between gap-2 opacity-0 translate-y-2 pointer-events-none transition-all duration-300" id="bulkActions">
+        <div class="flex flex-wrap items-center gap-2 sm:space-x-lg">
+            <span class="text-xs sm:text-body-md font-bold text-primary"><span id="selectedCount">0</span> Selected</span>
+            <div class="h-4 sm:h-6 w-px bg-outline-variant hidden sm:block"></div>
+            <div class="flex items-center gap-1 sm:space-x-sm">
+                <button onclick="bulkDeleteContacts()" class="px-1.5 sm:px-sm py-0.5 sm:py-xs text-on-surface-variant hover:text-error hover:bg-error-container/20 rounded-md transition-colors flex items-center gap-0.5 sm:space-x-xs">
+                    <span class="material-symbols-outlined text-[16px] sm:text-[18px]">delete</span>
+                    <span class="text-[10px] sm:text-label-md">Delete</span>
                 </button>
-                <button onclick="document.getElementById('bulkGroupModal').classList.remove('hidden')" class="px-sm py-xs text-on-surface-variant hover:text-primary hover:bg-primary-container/10 rounded-md transition-colors flex items-center space-x-xs">
-                    <span class="material-symbols-outlined text-[18px]">label</span>
-                    <span class="text-label-md">Add to Group</span>
+                <button onclick="document.getElementById('bulkGroupModal').classList.remove('hidden')" class="px-1.5 sm:px-sm py-0.5 sm:py-xs text-on-surface-variant hover:text-primary hover:bg-primary-container/10 rounded-md transition-colors flex items-center gap-0.5 sm:space-x-xs">
+                    <span class="material-symbols-outlined text-[16px] sm:text-[18px]">label</span>
+                    <span class="text-[10px] sm:text-label-md hidden xs:inline">Group</span>
                 </button>
-                <button onclick="document.getElementById('bulkBroadcastModal').classList.remove('hidden')" class="px-sm py-xs text-on-surface-variant hover:text-primary hover:bg-primary-container/10 rounded-md transition-colors flex items-center space-x-xs">
-                    <span class="material-symbols-outlined text-[18px]">chat</span>
-                    <span class="text-label-md">Broadcast</span>
+                <button onclick="document.getElementById('bulkBroadcastModal').classList.remove('hidden')" class="px-1.5 sm:px-sm py-0.5 sm:py-xs text-on-surface-variant hover:text-primary hover:bg-primary-container/10 rounded-md transition-colors flex items-center gap-0.5 sm:space-x-xs">
+                    <span class="material-symbols-outlined text-[16px] sm:text-[18px]">chat</span>
+                    <span class="text-[10px] sm:text-label-md hidden xs:inline">Broadcast</span>
                 </button>
             </div>
         </div>
-        <button class="text-label-md text-on-surface-variant hover:underline" onclick="deselectAll()">Clear Selection</button>
+        <button class="text-[10px] sm:text-label-md text-on-surface-variant hover:underline" onclick="deselectAll()">Clear</button>
     </div>
     
     <!-- Bento Grid Contacts Section -->
-    <div class="grid grid-cols-1 gap-lg">
+    <div class="grid grid-cols-1 gap-3 sm:gap-lg">
         <!-- Main Data Table Card -->
         <div class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm">
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
+            <div class="overflow-x-auto overflow-y-hidden">
+                <table class="w-full text-left border-collapse min-w-[650px]">
                     <thead class="bg-surface-container-low border-b border-outline-variant">
                         <tr>
-                            <th class="p-md w-12 text-center">
-                                <input class="w-4 h-4 rounded border-outline-variant text-primary focus:ring-primary cursor-pointer" id="selectAll" type="checkbox"/>
+                            <th class="p-2 sm:p-md w-10 sm:w-12 text-center">
+                                <input class="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded border-outline-variant text-primary focus:ring-primary cursor-pointer" id="selectAll" type="checkbox"/>
                             </th>
-                            <th class="p-md text-label-md font-bold text-on-surface-variant uppercase tracking-wider">Contact Name</th>
-                            <th class="p-md text-label-md font-bold text-on-surface-variant uppercase tracking-wider">Phone Number</th>
-                            <th class="p-md text-label-md font-bold text-on-surface-variant uppercase tracking-wider">Tags / Groups</th>
-                            <th class="p-md text-label-md font-bold text-on-surface-variant uppercase tracking-wider">Date Added</th>
-                            <th class="p-md text-label-md font-bold text-on-surface-variant uppercase tracking-wider text-right">Actions</th>
+                            <th class="p-2 sm:p-md text-[10px] sm:text-label-md font-bold text-on-surface-variant uppercase tracking-wider">Name</th>
+                            <th class="p-2 sm:p-md text-[10px] sm:text-label-md font-bold text-on-surface-variant uppercase tracking-wider">Phone</th>
+                            <th class="p-2 sm:p-md text-[10px] sm:text-label-md font-bold text-on-surface-variant uppercase tracking-wider">Tags</th>
+                            <th class="p-2 sm:p-md text-[10px] sm:text-label-md font-bold text-on-surface-variant uppercase tracking-wider">Status</th>
+                            <th class="p-2 sm:p-md text-[10px] sm:text-label-md font-bold text-on-surface-variant uppercase tracking-wider">Added</th>
+                            <th class="p-2 sm:p-md text-[10px] sm:text-label-md font-bold text-on-surface-variant uppercase tracking-wider text-right">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-outline-variant">
                         @forelse($contacts as $contact)
                         <tr class="hover:bg-surface-container transition-colors group" id="contact-row-{{ $contact->id }}">
-                            <td class="p-md text-center">
-                                <input class="contact-checkbox w-4 h-4 rounded border-outline-variant text-primary focus:ring-primary cursor-pointer" type="checkbox" value="{{ $contact->id }}"/>
+                            <td class="p-2 sm:p-md text-center">
+                                <input class="contact-checkbox w-3.5 h-3.5 sm:w-4 sm:h-4 rounded border-outline-variant text-primary focus:ring-primary cursor-pointer" type="checkbox" value="{{ $contact->id }}"/>
                             </td>
-                            <td class="p-md">
-                                <div class="flex items-center space-x-md">
-                                    <div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center font-bold text-on-secondary-container text-[12px]">{{ strtoupper(substr($contact->name, 0, 2)) }}</div>
-                                    <span class="font-body-md font-bold text-on-surface">{{ $contact->name }}</span>
+                            <td class="p-2 sm:p-md">
+                                <div class="flex items-center gap-1.5 sm:space-x-md">
+                                    <div class="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-secondary-container flex items-center justify-center font-bold text-on-secondary-container text-[9px] sm:text-[12px] flex-shrink-0">{{ strtoupper(substr($contact->name, 0, 2)) }}</div>
+                                    <span class="text-xs sm:text-body-md font-bold text-on-surface truncate max-w-[80px] sm:max-w-none">{{ $contact->name }}</span>
                                 </div>
                             </td>
-                            <td class="p-md font-body-md text-on-surface-variant">{{ $contact->phone_number }}</td>
-                            <td class="p-md">
-                                <div class="flex flex-wrap gap-xs">
-                                    <span class="px-xs py-[2px] bg-primary-container text-on-primary-container text-label-sm rounded-full font-bold">{{ $contact->label ?? 'Unlabeled' }}</span>
+                            <td class="p-2 sm:p-md text-xs sm:text-body-md text-on-surface-variant whitespace-nowrap">{{ $contact->phone_number }}</td>
+                            <td class="p-2 sm:p-md">
+                                <span class="px-1 sm:px-xs py-[1px] sm:py-[2px] bg-primary-container text-on-primary-container text-[9px] sm:text-label-sm rounded-full font-bold">{{ $contact->label ?? 'Unlabeled' }}</span>
+                            </td>
+                            <td class="p-2 sm:p-md">
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input class="sr-only contact-toggle-active" type="checkbox" data-id="{{ $contact->id }}" {{ $contact->is_active ? 'checked' : '' }}/>
+                                    <div class="w-8 sm:w-10 h-4 sm:h-5 bg-outline-variant rounded-full transition-all before:content-[''] before:absolute before:top-[1px] sm:before:top-[2px] before:left-[1px] sm:before:left-[2px] before:bg-white before:rounded-full before:h-3 sm:before:h-4 before:w-3 sm:before:w-4 before:transition-all {{ $contact->is_active ? 'bg-green-500 before:translate-x-4 sm:before:translate-x-5' : '' }}"></div>
+                                </label>
+                            </td>
+                            <td class="p-2 sm:p-md">
+                                <div class="flex items-center text-on-surface-variant gap-1 sm:space-x-xs">
+                                    <div class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-primary-container"></div>
+                                    <span class="text-[10px] sm:text-body-md whitespace-nowrap">{{ $contact->created_at->diffForHumans() }}</span>
                                 </div>
                             </td>
-                            <td class="p-md">
-                                <div class="flex items-center text-on-surface-variant space-x-xs">
-                                    <div class="w-2 h-2 rounded-full bg-primary-container"></div>
-                                    <span class="text-body-md">{{ $contact->created_at->diffForHumans() }}</span>
+                            <td class="p-2 sm:p-md text-right">
+                                <div class="flex justify-end items-center gap-0.5 sm:gap-xs">
+                                    <button type="button" onclick="openEditModal({{ $contact->id }}, {{ \Illuminate\Support\Js::from($contact->name) }}, {{ \Illuminate\Support\Js::from($contact->phone_number) }}, {{ \Illuminate\Support\Js::from($contact->label ?? '') }}, {{ $contact->is_active ? 'true' : 'false' }})" class="text-on-surface-variant hover:text-primary transition-colors p-0.5 sm:p-0" title="Edit Contact">
+                                        <span class="material-symbols-outlined text-[16px] sm:text-[24px]">edit</span>
+                                    </button>
+                                    <button type="button" onclick="openDirectMessageModal({{ $contact->id }}, '{{ addslashes($contact->name) }}', '{{ $contact->phone_number }}')" class="text-on-surface-variant hover:text-primary transition-colors p-0.5 sm:p-0" title="Send Direct Message">
+                                        <span class="material-symbols-outlined text-[16px] sm:text-[24px]">chat</span>
+                                    </button>
+                                    <button type="button" onclick="deleteContact(event, {{ $contact->id }})" class="text-on-surface-variant hover:text-error transition-colors p-0.5 sm:p-0" title="Delete Contact">
+                                        <span class="material-symbols-outlined text-[16px] sm:text-[24px]">delete</span>
+                                    </button>
                                 </div>
-                            </td>
-                            <td class="p-md text-right flex justify-end items-center gap-xs">
-                                <button type="button" onclick="openEditModal({{ $contact->id }}, {{ \Illuminate\Support\Js::from($contact->name) }}, {{ \Illuminate\Support\Js::from($contact->phone_number) }}, {{ \Illuminate\Support\Js::from($contact->label ?? '') }})" class="text-on-surface-variant hover:text-primary transition-colors" title="Edit Contact">
-                                    <span class="material-symbols-outlined">edit</span>
-                                </button>
-                                <button type="button" onclick="openDirectMessageModal({{ $contact->id }}, '{{ addslashes($contact->name) }}', '{{ $contact->phone_number }}')" class="text-on-surface-variant hover:text-primary transition-colors" title="Send Direct Message">
-                                    <span class="material-symbols-outlined">chat</span>
-                                </button>
-                                <button type="button" onclick="deleteContact(event, {{ $contact->id }})" class="text-on-surface-variant hover:text-error transition-colors flex items-center" title="Delete Contact">
-                                    <span class="material-symbols-outlined">delete</span>
-                                </button>
                             </td>
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="6" class="p-md text-center text-on-surface-variant">Belum ada kontak.</td>
+                            <td colspan="7" class="p-2 sm:p-md text-center text-on-surface-variant text-xs sm:text-sm">Belum ada kontak.</td>
                         </tr>
                         @endforelse
                     </tbody>
@@ -142,38 +153,33 @@
             </div>
             
             <!-- Pagination Footer -->
-            <div class="p-md bg-surface-container-low border-t border-outline-variant flex items-center justify-between">
-                <span class="text-label-md text-on-surface-variant">Showing {{ $contacts->firstItem() ?? 0 }} to {{ $contacts->lastItem() ?? 0 }} of {{ $contacts->total() }} contacts</span>
+            <div class="p-2 sm:p-md bg-surface-container-low border-t border-outline-variant flex flex-col sm:flex-row items-center justify-between gap-2">
+                <span class="text-[10px] sm:text-label-md text-on-surface-variant">Showing {{ $contacts->firstItem() ?? 0 }} to {{ $contacts->lastItem() ?? 0 }} of {{ $contacts->total() }} contacts</span>
                 @if ($contacts->hasPages())
-                <div class="flex items-center space-x-xs">
-                    {{-- Previous Page Link --}}
+                <div class="flex items-center gap-1 sm:space-x-xs">
                     @if ($contacts->onFirstPage())
-                        <button class="p-xs border border-outline-variant rounded-md text-outline opacity-50 cursor-not-allowed" disabled>
-                            <span class="material-symbols-outlined">chevron_left</span>
+                        <button class="p-1 sm:p-xs border border-outline-variant rounded-md text-outline opacity-50 cursor-not-allowed" disabled>
+                            <span class="material-symbols-outlined text-[16px] sm:text-[24px]">chevron_left</span>
                         </button>
                     @else
-                        <a href="{{ $contacts->previousPageUrl() }}" class="p-xs border border-outline-variant rounded-md hover:bg-white text-outline flex items-center">
-                            <span class="material-symbols-outlined">chevron_left</span>
+                        <a href="{{ $contacts->previousPageUrl() }}" class="p-1 sm:p-xs border border-outline-variant rounded-md hover:bg-white text-outline flex items-center">
+                            <span class="material-symbols-outlined text-[16px] sm:text-[24px]">chevron_left</span>
                         </a>
                     @endif
-
-                    {{-- Page Numbers --}}
                     @foreach ($contacts->getUrlRange(max(1, $contacts->currentPage() - 2), min($contacts->lastPage(), $contacts->currentPage() + 2)) as $page => $url)
                         @if ($page == $contacts->currentPage())
-                            <button class="w-8 h-8 flex items-center justify-center bg-primary text-on-primary rounded-md font-bold text-label-md">{{ $page }}</button>
+                            <button class="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center bg-primary text-on-primary rounded-md font-bold text-[11px] sm:text-label-md">{{ $page }}</button>
                         @else
-                            <a href="{{ $url }}" class="w-8 h-8 flex items-center justify-center border border-outline-variant rounded-md hover:bg-white text-on-surface text-label-md flex items-center justify-center">{{ $page }}</a>
+                            <a href="{{ $url }}" class="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center border border-outline-variant rounded-md hover:bg-white text-on-surface text-[11px] sm:text-label-md">{{ $page }}</a>
                         @endif
                     @endforeach
-
-                    {{-- Next Page Link --}}
                     @if ($contacts->hasMorePages())
-                        <a href="{{ $contacts->nextPageUrl() }}" class="p-xs border border-outline-variant rounded-md hover:bg-white text-outline flex items-center">
-                            <span class="material-symbols-outlined">chevron_right</span>
+                        <a href="{{ $contacts->nextPageUrl() }}" class="p-1 sm:p-xs border border-outline-variant rounded-md hover:bg-white text-outline flex items-center">
+                            <span class="material-symbols-outlined text-[16px] sm:text-[24px]">chevron_right</span>
                         </a>
                     @else
-                        <button class="p-xs border border-outline-variant rounded-md text-outline opacity-50 cursor-not-allowed" disabled>
-                            <span class="material-symbols-outlined">chevron_right</span>
+                        <button class="p-1 sm:p-xs border border-outline-variant rounded-md text-outline opacity-50 cursor-not-allowed" disabled>
+                            <span class="material-symbols-outlined text-[16px] sm:text-[24px]">chevron_right</span>
                         </button>
                     @endif
                 </div>
@@ -182,42 +188,42 @@
         </div>
         
         <!-- Bottom Asymmetric Cards (Bento Style) -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-lg">
-            <div class="md:col-span-1 bg-surface-container-lowest border border-outline-variant rounded-xl p-lg relative overflow-hidden group shadow-sm">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-lg">
+            <div class="md:col-span-1 bg-surface-container-lowest border border-outline-variant rounded-xl p-3 sm:p-lg relative overflow-hidden group shadow-sm">
                 <div class="absolute -right-8 -bottom-8 opacity-10 group-hover:scale-110 transition-transform duration-500">
-                    <span class="material-symbols-outlined text-[120px] text-primary" style="font-variation-settings: 'FILL' 1;">pie_chart</span>
+                    <span class="material-symbols-outlined text-[80px] sm:text-[120px] text-primary" style="font-variation-settings: 'FILL' 1;">pie_chart</span>
                 </div>
-                <h4 class="font-headline-md text-headline-md mb-md">Segmentation</h4>
-                <ul class="space-y-sm relative z-10">
+                <h4 class="font-headline-md text-headline-md text-sm sm:text-base mb-2 sm:mb-md">Segmentation</h4>
+                <ul class="space-y-1 sm:space-y-sm relative z-10">
                     @forelse($segments->take(5) as $seg)
                     <li class="flex items-center justify-between">
-                        <span class="text-body-md text-on-surface-variant">{{ $seg->label }}</span>
-                        <span class="font-bold text-primary">{{ $seg->total }}</span>
+                        <span class="text-xs sm:text-body-md text-on-surface-variant">{{ $seg->label }}</span>
+                        <span class="font-bold text-primary text-xs sm:text-sm">{{ $seg->total }}</span>
                     </li>
                     @empty
-                    <li class="text-label-sm text-outline">Belum ada segmen/grup.</li>
+                    <li class="text-label-sm text-outline text-xs">Belum ada segmen/grup.</li>
                     @endforelse
                 </ul>
             </div>
             
-            <div class="md:col-span-2 bg-surface-container-lowest border border-outline-variant rounded-xl p-lg shadow-sm">
-                <h4 class="font-headline-md text-headline-md mb-md">Tips Manajemen Kontak</h4>
-                <ul class="space-y-sm text-body-md text-on-surface-variant">
-                    <li class="flex items-start gap-sm">
-                        <span class="material-symbols-outlined text-primary text-[20px] mt-0.5">check_circle</span>
-                        <span>Gunakan format nomor <code class="bg-surface-container px-xs py-0.5 rounded text-primary font-bold">628xxx</code> untuk hasil terbaik.</span>
+            <div class="md:col-span-2 bg-surface-container-lowest border border-outline-variant rounded-xl p-3 sm:p-lg shadow-sm">
+                <h4 class="font-headline-md text-headline-md text-sm sm:text-base mb-2 sm:mb-md">Tips Manajemen Kontak</h4>
+                <ul class="space-y-1 sm:space-y-sm text-xs sm:text-body-md text-on-surface-variant">
+                    <li class="flex items-start gap-1 sm:gap-sm">
+                        <span class="material-symbols-outlined text-primary text-[16px] sm:text-[20px] mt-0.5">check_circle</span>
+                        <span>Gunakan format nomor <code class="bg-surface-container px-0.5 sm:px-xs py-0.5 rounded text-primary font-bold">628xxx</code>.</span>
                     </li>
-                    <li class="flex items-start gap-sm">
-                        <span class="material-symbols-outlined text-primary text-[20px] mt-0.5">check_circle</span>
-                        <span>Import CSV dengan kolom: <strong>Nomor, Nama, Label</strong> (dipisah koma atau titik koma).</span>
+                    <li class="flex items-start gap-1 sm:gap-sm">
+                        <span class="material-symbols-outlined text-primary text-[16px] sm:text-[20px] mt-0.5">check_circle</span>
+                        <span>Import CSV: <strong>Nomor, Nama, Label</strong>.</span>
                     </li>
-                    <li class="flex items-start gap-sm">
-                        <span class="material-symbols-outlined text-primary text-[20px] mt-0.5">check_circle</span>
-                        <span>Gunakan fitur <strong>Bulk Broadcast</strong> untuk mengirim pesan ke banyak kontak sekaligus.</span>
+                    <li class="flex items-start gap-1 sm:gap-sm">
+                        <span class="material-symbols-outlined text-primary text-[16px] sm:text-[20px] mt-0.5">check_circle</span>
+                        <span>Gunakan <strong>Bulk Broadcast</strong> untuk pesan massal.</span>
                     </li>
-                    <li class="flex items-start gap-sm">
-                        <span class="material-symbols-outlined text-primary text-[20px] mt-0.5">check_circle</span>
-                        <span>Buat <strong>Label/Grup</strong> untuk mengelompokkan kontak berdasarkan kategori.</span>
+                    <li class="flex items-start gap-1 sm:gap-sm">
+                        <span class="material-symbols-outlined text-primary text-[16px] sm:text-[20px] mt-0.5">check_circle</span>
+                        <span>Buat <strong>Label/Grup</strong> untuk mengelompokkan kontak.</span>
                     </li>
                 </ul>
             </div>
@@ -371,6 +377,17 @@
                         <label class="block font-label-md text-label-md text-on-surface mb-xs">Tag / Group (Optional)</label>
                         <input type="text" id="editLabel" name="label" placeholder="Cth: Reseller, Pelanggan, Leads" class="w-full bg-surface-container-lowest border border-outline-variant px-md py-sm rounded-lg focus:outline-none focus:border-primary text-on-surface">
                     </div>
+                    <div class="flex items-center justify-between pt-sm border-t border-outline-variant/30">
+                        <div>
+                            <p class="font-bold text-on-surface text-sm">Active Contact</p>
+                            <p class="text-label-sm text-on-surface-variant">Nonaktifkan untuk mengecualikan dari campaign.</p>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="hidden" name="is_active" value="0">
+                            <input type="checkbox" id="editIsActive" name="is_active" value="1" class="sr-only peer">
+                            <div class="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-outline-variant after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
+                        </label>
+                    </div>
                 </div>
                 <div class="px-lg py-md border-t border-outline-variant bg-surface-container-lowest flex justify-end gap-sm">
                     <button type="button" onclick="document.getElementById('editContactModal').classList.add('hidden')" class="px-md py-sm font-label-lg font-bold text-on-surface-variant hover:bg-surface-variant rounded-lg">Cancel</button>
@@ -417,12 +434,13 @@
 
 @push('scripts')
     <script>
-        function openEditModal(contactId, name, phoneNumber, label) {
+        function openEditModal(contactId, name, phoneNumber, label, isActive) {
             const form = document.getElementById('editContactForm');
             form.action = `/contacts/${contactId}`;
             document.getElementById('editName').value = name;
             document.getElementById('editPhoneNumber').value = phoneNumber;
             document.getElementById('editLabel').value = label;
+            document.getElementById('editIsActive').checked = !!isActive;
             document.getElementById('editContactModal').classList.remove('hidden');
         }
 
@@ -691,5 +709,39 @@
                 alert('Terjadi kesalahan.');
             });
         }
+
+        // Toggle active status
+        document.addEventListener('change', function(e) {
+            if (e.target.classList.contains('contact-toggle-active')) {
+                const contactId = e.target.dataset.id;
+                const checkbox = e.target;
+                const slider = checkbox.nextElementSibling;
+
+                fetch(`/contacts/${contactId}/toggle-active`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json',
+                    },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        if (data.is_active) {
+                            slider.className = 'w-10 h-5 bg-green-500 rounded-full transition-all before:content-[""] before:absolute before:top-[2px] before:left-[2px] before:bg-white before:rounded-full before:h-4 before:w-4 before:transition-all before:translate-x-5';
+                        } else {
+                            slider.className = 'w-10 h-5 bg-outline-variant rounded-full transition-all before:content-[""] before:absolute before:top-[2px] before:left-[2px] before:bg-white before:rounded-full before:h-4 before:w-4 before:transition-all';
+                        }
+                    } else {
+                        checkbox.checked = !checkbox.checked;
+                        alert('Gagal mengubah status kontak.');
+                    }
+                })
+                .catch(() => {
+                    checkbox.checked = !checkbox.checked;
+                    alert('Terjadi kesalahan.');
+                });
+            }
+        });
     </script>
 @endpush

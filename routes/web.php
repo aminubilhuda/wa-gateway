@@ -19,6 +19,11 @@ Route::middleware('guest')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
     Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
     Route::post('/register', [AuthController::class, 'register']);
+
+    Route::get('/forgot-password', [AuthController::class, 'showForgotForm'])->name('password.request');
+    Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->name('password.email');
+    Route::get('/reset-password/{token}', [AuthController::class, 'showResetForm'])->name('password.reset');
+    Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
 });
 
 // Logout Route (Auth Only)
@@ -36,11 +41,13 @@ Route::middleware('auth')->group(function () {
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
 
     Route::get('/contacts', [ContactController::class, 'index'])->name('contacts');
+    Route::get('/contacts/export', [ContactController::class, 'exportCsv'])->name('contacts.export');
     Route::post('/contacts', [ContactController::class, 'store'])->name('contacts.store');
     Route::post('/contacts/import', [ContactController::class, 'importCsv'])->name('contacts.import');
     Route::post('/contacts/bulk-delete', [ContactController::class, 'bulkDelete'])->name('contacts.bulk-delete');
     Route::post('/contacts/bulk-add-group', [ContactController::class, 'bulkAddGroup'])->name('contacts.bulk-add-group');
     Route::post('/contacts/bulk-broadcast', [ContactController::class, 'bulkBroadcast'])->name('contacts.bulk-broadcast');
+    Route::post('/contacts/{contact}/toggle-active', [ContactController::class, 'toggleActive'])->name('contacts.toggle-active');
     Route::delete('/contacts/{contact}', [ContactController::class, 'destroy'])->name('contacts.destroy');
     Route::put('/contacts/{contact}', [ContactController::class, 'update'])->name('contacts.update');
     Route::post('/contacts/{contact}/send-message', [ContactController::class, 'sendMessage'])->name('contacts.send-message');
@@ -76,6 +83,10 @@ Route::middleware('auth')->group(function () {
     Route::delete('/blacklist/{blacklist}', [BlacklistController::class, 'destroy'])->name('blacklist.destroy');
 });
 
-// Webhook Routes (Public)
-Route::match(['get', 'post'], '/webhook/fonnte/device', [WebhookController::class, 'device'])->name('webhook.fonnte.device');
-Route::match(['get', 'post'], '/webhook/fonnte/message', [WebhookController::class, 'message'])->name('webhook.fonnte.message');
+// Webhook Routes (Public — with rate limiting)
+Route::match(['get', 'post'], '/webhook/fonnte/device', [WebhookController::class, 'device'])
+    ->name('webhook.fonnte.device')
+    ->middleware('throttle:webhook-device');
+Route::match(['get', 'post'], '/webhook/fonnte/message', [WebhookController::class, 'message'])
+    ->name('webhook.fonnte.message')
+    ->middleware('throttle:webhook-message');

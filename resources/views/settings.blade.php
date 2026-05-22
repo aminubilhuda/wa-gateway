@@ -24,121 +24,120 @@
 @endpush
 
 @section('content')
-    <div class="max-w-7xl mx-auto space-y-lg">
+    <div class="max-w-7xl mx-auto space-y-3 sm:space-y-lg">
         <!-- Breadcrumbs -->
-        <nav class="flex items-center space-x-xs text-on-surface-variant font-label-md text-label-md mb-lg">
+        <nav class="flex items-center gap-1 sm:space-x-xs text-on-surface-variant font-label-md text-label-md mb-2 sm:mb-lg text-xs sm:text-sm">
             <a class="hover:text-primary" href="{{ route('dashboard') }}">Dashboard</a>
-            <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+            <span class="material-symbols-outlined text-[12px] sm:text-[14px]">chevron_right</span>
             <span class="text-primary font-bold">Multi-Device Settings</span>
         </nav>
 
         <!-- Page Header -->
-        <div class="flex justify-between items-start mb-xl">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0 mb-3 sm:mb-xl">
             <div>
-                <h2 class="font-headline-lg text-headline-lg text-on-surface mb-xs">WhatsApp Multi-Device Management</h2>
-                <p class="font-body-md text-body-md text-on-surface-variant max-w-2xl">
-                    Hubungkan beberapa akun WhatsApp untuk membagi beban pengiriman secara merata (*Round-Robin*) dan meminimalisir risiko blokir (*Anti-Banned*).
+                <h2 class="font-headline-lg-mobile lg:font-headline-lg text-headline-lg-mobile lg:text-headline-lg text-on-surface mb-1 sm:mb-xs">WhatsApp Multi-Device Management</h2>
+                <p class="font-body-md text-body-md text-on-surface-variant max-w-2xl text-sm">
+                    Hubungkan beberapa akun WhatsApp untuk Round-Robin &amp; Anti-Banned.
                 </p>
             </div>
-            <button onclick="toggleAddDeviceModal(true)" class="bg-primary text-on-primary px-lg py-sm rounded-lg font-bold hover:brightness-110 active:scale-95 transition-all flex items-center gap-xs shadow-md">
-                <span class="material-symbols-outlined text-[20px]">add_circle</span>
+            <button onclick="toggleAddDeviceModal(true)" class="bg-primary text-on-primary px-3 sm:px-lg py-1.5 sm:py-sm rounded-lg font-bold hover:brightness-110 active:scale-95 transition-all flex items-center gap-1 sm:gap-xs shadow-md text-xs sm:text-sm w-full sm:w-auto justify-center">
+                <span class="material-symbols-outlined text-[16px] sm:text-[20px]">add_circle</span>
                 <span>Tambah Perangkat</span>
             </button>
         </div>
 
         @if(session('success'))
-            <div class="bg-green-100 border border-green-400 text-green-700 px-lg py-md rounded-xl mb-lg">
+            <div class="bg-green-100 border border-green-400 text-green-700 px-3 sm:px-lg py-2 sm:py-md rounded-xl mb-3 sm:mb-lg text-xs sm:text-sm">
                 {{ session('success') }}
             </div>
         @endif
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-gutter">
             
             <!-- Left Side: Devices List (col-span-7) -->
-            <div class="lg:col-span-7 space-y-lg">
+            <div class="lg:col-span-7 space-y-3 sm:space-y-lg">
                 <div class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden">
-                    <div class="px-lg py-md bg-surface-container-low border-b border-outline-variant">
-                        <h4 class="font-headline-md text-headline-md text-on-surface">Daftar Perangkat WhatsApp</h4>
+                    <div class="px-3 sm:px-lg py-2 sm:py-md bg-surface-container-low border-b border-outline-variant">
+                        <h4 class="font-headline-md text-headline-md text-sm sm:text-base text-on-surface">Daftar Perangkat WhatsApp</h4>
                     </div>
                     
                     <div class="divide-y divide-outline-variant">
                         @forelse($devices as $dev)
-                            <div class="p-lg flex flex-col md:flex-row md:items-center justify-between gap-md hover:bg-surface-container/20 transition-colors">
-                                <div class="space-y-xs">
-                                    <div class="flex items-center gap-sm">
-                                        <h5 class="font-bold text-body-lg text-on-surface">{{ $dev->name }}</h5>
+                            <div class="p-3 sm:p-lg flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-md hover:bg-surface-container/20 transition-colors">
+                                <div class="space-y-0.5 sm:space-y-xs min-w-0 flex-1">
+                                    <div class="flex items-center gap-1 sm:gap-sm flex-wrap">
+                                        <h5 class="font-bold text-sm sm:text-body-lg text-on-surface truncate">{{ $dev->name }}</h5>
                                         @if($dev->status == 'connected')
-                                            <span class="px-sm py-0.5 bg-green-100 text-green-800 rounded-full text-xs font-bold uppercase tracking-wider">Connected</span>
+                                            <span class="px-1.5 sm:px-sm py-0.5 bg-green-100 text-green-800 rounded-full text-[9px] sm:text-xs font-bold uppercase tracking-wider">Connected</span>
                                         @else
-                                            <span class="px-sm py-0.5 bg-outline-variant text-on-surface-variant rounded-full text-xs font-bold uppercase tracking-wider">Disconnected</span>
+                                            <span class="px-1.5 sm:px-sm py-0.5 bg-outline-variant text-on-surface-variant rounded-full text-[9px] sm:text-xs font-bold uppercase tracking-wider">Disconnected</span>
                                         @endif
                                     </div>
-                                    <p class="text-label-md text-on-surface-variant">Nomor: <span class="font-mono">{{ $dev->phone_number ?? '-' }}</span></p>
-                                    <p class="text-label-md text-on-surface-variant">Jeda Kirim: <span class="bg-primary/5 text-primary px-sm py-0.5 rounded font-bold">{{ $dev->delay_seconds }} detik</span></p>
-                                    <p class="text-label-md text-on-surface-variant">Gateway: <span class="bg-primary/5 text-[#006d2f] px-sm py-0.5 rounded font-mono text-xs">{{ $dev->gateway_url ?? 'https://api.fonnte.com' }}</span></p>
-                                    <p class="text-label-sm text-tertiary truncate max-w-sm">Token: <span class="font-mono">{{ substr($dev->token, 0, 10) }}...</span></p>
+                                    <p class="text-[10px] sm:text-label-md text-on-surface-variant truncate">Nomor: <span class="font-mono">{{ $dev->phone_number ?? '-' }}</span></p>
+                                    <p class="text-[10px] sm:text-label-md text-on-surface-variant">Delay: <span class="bg-primary/5 text-primary px-1 sm:px-sm py-0.5 rounded font-bold">{{ $dev->delay_seconds }} detik</span></p>
+                                    <p class="text-[10px] sm:text-label-md text-on-surface-variant hidden sm:block">Gateway: <span class="bg-primary/5 text-[#006d2f] px-1 sm:px-sm py-0.5 rounded font-mono text-[9px] sm:text-xs truncate max-w-[200px] inline-block align-bottom">{{ $dev->gateway_url ?? 'https://api.fonnte.com' }}</span></p>
                                 </div>
                                 
-                                <div class="flex flex-wrap items-center gap-sm">
+                                <div class="flex flex-wrap items-center gap-1 sm:gap-sm flex-shrink-0">
                                     @if($dev->status == 'connected')
-                                        <form action="{{ route('settings.device.disconnect', $dev->id) }}" method="POST" onsubmit="return confirm('Putuskan koneksi perangkat ini?');">
+                                        <form action="{{ route('settings.device.disconnect', $dev->id) }}" method="POST" onsubmit="return confirm('Putuskan koneksi?');">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="p-xs text-error hover:bg-error/10 rounded transition-colors flex items-center justify-center" title="Disconnect Device">
-                                                <span class="material-symbols-outlined">link_off</span>
+                                            <button type="submit" class="p-0.5 sm:p-xs text-error hover:bg-error/10 rounded transition-colors" title="Disconnect">
+                                                <span class="material-symbols-outlined text-[18px] sm:text-[24px]">link_off</span>
                                             </button>
                                         </form>
                                     @else
-                                        <a href="{{ route('settings', ['device_id' => $dev->id]) }}" class="px-sm py-xs bg-primary/10 text-primary hover:bg-primary/20 rounded-lg text-label-md font-bold transition-all flex items-center gap-xs">
-                                            <span class="material-symbols-outlined text-[16px]">qr_code_scanner</span>
-                                            <span>Scan QR</span>
+                                        <a href="{{ route('settings', ['device_id' => $dev->id]) }}" class="px-1.5 sm:px-sm py-0.5 sm:py-xs bg-primary/10 text-primary hover:bg-primary/20 rounded-lg text-[10px] sm:text-label-md font-bold transition-all flex items-center gap-0.5 sm:gap-xs">
+                                            <span class="material-symbols-outlined text-[14px] sm:text-[16px]">qr_code_scanner</span>
+                                            <span class="hidden xs:inline">Scan QR</span>
                                         </a>
                                     @endif
 
-                                    <a href="{{ route('settings', ['refresh_device_id' => $dev->id]) }}" class="p-xs text-secondary hover:bg-secondary/10 rounded transition-colors flex items-center justify-center" title="Refresh Status">
-                                        <span class="material-symbols-outlined">sync</span>
+                                    <a href="{{ route('settings', ['refresh_device_id' => $dev->id]) }}" class="p-0.5 sm:p-xs text-secondary hover:bg-secondary/10 rounded transition-colors" title="Refresh">
+                                        <span class="material-symbols-outlined text-[18px] sm:text-[24px]">sync</span>
                                     </a>
 
-                                    <button onclick="openEditModal({{ \Illuminate\Support\Js::from($dev) }})" class="p-xs text-primary hover:bg-primary/10 rounded transition-colors flex items-center justify-center" title="Edit Device Config">
-                                        <span class="material-symbols-outlined">edit</span>
+                                    <button onclick="openEditModal({{ \Illuminate\Support\Js::from($dev) }})" class="p-0.5 sm:p-xs text-primary hover:bg-primary/10 rounded transition-colors" title="Edit">
+                                        <span class="material-symbols-outlined text-[18px] sm:text-[24px]">edit</span>
                                     </button>
 
-                                    <form action="{{ route('settings.device.delete', $dev->id) }}" method="POST" onsubmit="return confirm('Hapus perangkat ini secara permanen?');">
+                                    <form action="{{ route('settings.device.delete', $dev->id) }}" method="POST" onsubmit="return confirm('Hapus perangkat ini?');">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="p-xs text-on-secondary-fixed-variant hover:text-error hover:bg-error/10 rounded transition-colors flex items-center justify-center" title="Delete Device">
-                                            <span class="material-symbols-outlined">delete</span>
+                                        <button type="submit" class="p-0.5 sm:p-xs text-on-secondary-fixed-variant hover:text-error hover:bg-error/10 rounded transition-colors" title="Delete">
+                                            <span class="material-symbols-outlined text-[18px] sm:text-[24px]">delete</span>
                                         </button>
                                     </form>
                                 </div>
                             </div>
                         @empty
-                            <div class="p-xl text-center text-on-surface-variant">Belum ada perangkat WhatsApp yang ditambahkan.</div>
+                            <div class="p-3 sm:p-xl text-center text-on-surface-variant text-xs sm:text-sm">Belum ada perangkat.</div>
                         @endforelse
                     </div>
                 </div>
 
                 <!-- Webhook Info Card -->
-                <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg space-y-md">
-                    <h4 class="font-bold text-body-lg text-on-surface">Device Webhook Integration</h4>
-                    <p class="text-body-sm text-on-surface-variant">Pastikan Anda menyalin URL Webhook berikut dan menempelkannya di dashboard Fonnte pada setiap perangkat yang terdaftar agar fitur status koneksi dan *auto-reply* berfungsi otomatis:</p>
+                <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-3 sm:p-lg space-y-2 sm:space-y-md">
+                    <h4 class="font-bold text-sm sm:text-body-lg text-on-surface">Device Webhook Integration</h4>
+                    <p class="text-xs sm:text-body-sm text-on-surface-variant">Salin URL Webhook berikut untuk auto-reply:</p>
                     
-                    <div class="space-y-sm">
+                    <div class="space-y-1 sm:space-y-sm">
                         <div>
-                            <label class="block text-label-sm text-outline uppercase tracking-wider mb-xs">Status Perangkat</label>
-                            <div class="flex items-center gap-xs bg-surface-container-low p-sm rounded-lg border border-outline-variant/30">
-                                <code class="flex-1 font-mono text-xs select-all text-on-surface truncate" id="deviceWebhookUrl">{{ url('/webhook/fonnte/device') }}</code>
-                                <button onclick="copyToClipboard('deviceWebhookUrl', this)" type="button" class="p-xs hover:bg-surface-container rounded text-primary transition-all flex items-center" title="Copy to clipboard">
-                                    <span class="material-symbols-outlined text-[18px]">content_copy</span>
+                            <label class="block text-[9px] sm:text-label-sm text-outline uppercase tracking-wider mb-0.5 sm:mb-xs">Status Perangkat</label>
+                            <div class="flex items-center gap-0.5 sm:gap-xs bg-surface-container-low p-1 sm:p-sm rounded-lg border border-outline-variant/30">
+                                <code class="flex-1 font-mono text-[10px] sm:text-xs select-all text-on-surface truncate" id="deviceWebhookUrl">{{ url('/webhook/fonnte/device') }}</code>
+                                <button onclick="copyToClipboard('deviceWebhookUrl', this)" type="button" class="p-0.5 sm:p-xs hover:bg-surface-container rounded text-primary transition-all flex items-center">
+                                    <span class="material-symbols-outlined text-[16px] sm:text-[18px]">content_copy</span>
                                 </button>
                             </div>
                         </div>
                         <div>
-                            <label class="block text-label-sm text-outline uppercase tracking-wider mb-xs">Webhook Pesan Masuk / Auto-Reply</label>
-                            <div class="flex items-center gap-xs bg-surface-container-low p-sm rounded-lg border border-outline-variant/30">
-                                <code class="flex-1 font-mono text-xs select-all text-on-surface truncate" id="messageWebhookUrl">{{ url('/webhook/fonnte/message') }}</code>
-                                <button onclick="copyToClipboard('messageWebhookUrl', this)" type="button" class="p-xs hover:bg-surface-container rounded text-primary transition-all flex items-center" title="Copy to clipboard">
-                                    <span class="material-symbols-outlined text-[18px]">content_copy</span>
+                            <label class="block text-[9px] sm:text-label-sm text-outline uppercase tracking-wider mb-0.5 sm:mb-xs">Webhook Auto-Reply</label>
+                            <div class="flex items-center gap-0.5 sm:gap-xs bg-surface-container-low p-1 sm:p-sm rounded-lg border border-outline-variant/30">
+                                <code class="flex-1 font-mono text-[10px] sm:text-xs select-all text-on-surface truncate" id="messageWebhookUrl">{{ url('/webhook/fonnte/message') }}</code>
+                                <button onclick="copyToClipboard('messageWebhookUrl', this)" type="button" class="p-0.5 sm:p-xs hover:bg-surface-container rounded text-primary transition-all flex items-center">
+                                    <span class="material-symbols-outlined text-[16px] sm:text-[18px]">content_copy</span>
                                 </button>
                             </div>
                         </div>
@@ -147,70 +146,62 @@
             </div>
 
             <!-- Right Side: QR Scanner (col-span-5) -->
-            <div class="lg:col-span-5 space-y-lg">
+            <div class="lg:col-span-5 space-y-3 sm:space-y-lg">
                 @if($selectedDevice)
-                    <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-xl flex flex-col items-center justify-center relative overflow-hidden">
+                    <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 sm:p-xl flex flex-col items-center justify-center relative overflow-hidden">
                         <div class="absolute inset-0 bg-primary/5 pointer-events-none opacity-20"></div>
-                        <div class="mb-md text-center">
-                            <h4 class="font-bold text-body-lg text-on-surface">Scan QR: {{ $selectedDevice->name }}</h4>
-                            <p class="text-label-md text-on-surface-variant">Lakukan pemindaian kode QR di bawah untuk menautkan WhatsApp Anda.</p>
+                        <div class="mb-3 sm:mb-md text-center">
+                            <h4 class="font-bold text-sm sm:text-body-lg text-on-surface">Scan QR: {{ $selectedDevice->name }}</h4>
+                            <p class="text-[11px] sm:text-label-md text-on-surface-variant">Scan QR untuk menautkan WhatsApp.</p>
                         </div>
 
-                        <!-- QR Container -->
-                        <div class="relative bg-white p-base border border-outline-variant rounded-lg shadow-sm mb-lg z-10">
+                        <div class="relative bg-white p-2 sm:p-base border border-outline-variant rounded-lg shadow-sm mb-3 sm:mb-lg z-10">
                             <div class="qr-scanner-glow"></div>
                             @if($qrCode)
-                                @php
-                                    // Jika data URL (whatsapp-web.js) gunakan raw output, jika URL biasa (Fonnte) pakai langsung
-                                    $isDataUrl = str_starts_with(trim($qrCode), 'data:');
-                                @endphp
+                                @php $isDataUrl = str_starts_with(trim($qrCode), 'data:'); @endphp
                                 @if($isDataUrl)
-                                    <img alt="WhatsApp Link QR Code" class="w-64 h-64" src="{!! trim($qrCode) !!}">
+                                    <img alt="QR" class="w-48 h-48 sm:w-64 sm:h-64" src="{!! trim($qrCode) !!}">
                                 @else
-                                    <img alt="WhatsApp Link QR Code" class="w-64 h-64" src="{{ $qrCode }}">
+                                    <img alt="QR" class="w-48 h-48 sm:w-64 sm:h-64" src="{{ $qrCode }}">
                                 @endif
                             @else
                                 @if(isset($qrResponse['reason']) && $qrResponse['reason'] == 'device already connect')
-                                    <div class="w-64 h-64 flex flex-col items-center justify-center bg-green-50 text-center p-4">
-                                        <span class="material-symbols-outlined text-[48px] mb-2 text-green-600">check_circle</span>
-                                        <p class="font-bold text-green-700">Perangkat Sudah Terhubung</p>
-                                        <p class="text-xs text-green-600 mt-1">Device ini sudah terhubung. Tidak perlu scan QR lagi.</p>
+                                    <div class="w-48 h-48 sm:w-64 sm:h-64 flex flex-col items-center justify-center bg-green-50 text-center p-4">
+                                        <span class="material-symbols-outlined text-[36px] sm:text-[48px] mb-2 text-green-600">check_circle</span>
+                                        <p class="font-bold text-green-700 text-xs sm:text-sm">Terhubung</p>
                                     </div>
                                 @else
-                                    <div class="w-64 h-64 flex flex-col items-center justify-center bg-surface-container-low text-on-surface-variant text-center p-4">
-                                        <span class="material-symbols-outlined text-[48px] mb-2 text-error">error</span>
-                                        <p class="font-bold text-error">QR Code Tidak Tersedia</p>
-                                        <p class="text-xs">{{ $qrResponse['message'] ?? $qrResponse['reason'] ?? 'Gagal membuat koneksi QR code. Pastikan gateway berjalan dan token benar.' }}</p>
+                                    <div class="w-48 h-48 sm:w-64 sm:h-64 flex flex-col items-center justify-center bg-surface-container-low text-on-surface-variant text-center p-4">
+                                        <span class="material-symbols-outlined text-[36px] sm:text-[48px] mb-2 text-error">error</span>
+                                        <p class="font-bold text-error text-xs">QR Tidak Tersedia</p>
                                     </div>
                                 @endif
                             @endif
                         </div>
 
-                        <!-- Status Indicator -->
-                        <div class="flex items-center space-x-sm mb-lg">
-                            <span class="w-3 h-3 bg-amber-500 rounded-full status-pulse"></span>
-                            <span class="font-label-md text-label-md text-on-surface-variant tracking-wide uppercase">Waiting for scan</span>
+                        <div class="flex items-center gap-1 sm:space-x-sm mb-3 sm:mb-lg">
+                            <span class="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-amber-500 rounded-full status-pulse"></span>
+                            <span class="text-[10px] sm:text-label-md text-on-surface-variant tracking-wide uppercase">Waiting for scan</span>
                         </div>
 
-                        <a href="{{ route('settings') }}" class="px-lg py-sm border border-outline text-on-surface rounded-lg font-bold hover:bg-surface-container transition-colors active:scale-95 text-center w-full">
+                        <a href="{{ route('settings') }}" class="px-3 sm:px-lg py-1.5 sm:py-sm border border-outline text-on-surface rounded-lg font-bold hover:bg-surface-container transition-colors active:scale-95 text-center w-full text-xs sm:text-sm">
                             Selesai &amp; Tutup Scanner
                         </a>
                     </div>
                     
-                    <!-- Connection Step Card -->
-                    <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg">
-                        <h4 class="font-bold text-body-md text-on-surface mb-md">Cara Menghubungkan</h4>
-                        <ol class="list-decimal pl-md text-label-md text-on-surface-variant space-y-xs">
-                            <li>Buka aplikasi WhatsApp di ponsel Anda.</li>
-                            <li>Ketuk **Menu** (Android) atau **Pengaturan** (iOS) &gt; **Linked Devices** / Perangkat Tertaut.</li>
-                            <li>Ketuk **Tautkan Perangkat** lalu arahkan kamera ponsel ke QR Code di atas.</li>
+                    <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-3 sm:p-lg">
+                        <h4 class="font-bold text-xs sm:text-body-md text-on-surface mb-2 sm:mb-md">Cara Menghubungkan</h4>
+                        <ol class="list-decimal pl-3 sm:pl-md text-[10px] sm:text-label-md text-on-surface-variant space-y-0.5 sm:space-y-xs">
+                            <li>Buka WhatsApp di ponsel.</li>
+                            <li>Menu &gt; Linked Devices.</li>
+                            <li>Tautkan Perangkat &gt; Scan QR.</li>
                         </ol>
                     </div>
                 @else
-                    <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-xl flex flex-col items-center justify-center text-center text-on-surface-variant min-h-[350px]">
-                        <span class="material-symbols-outlined text-[64px] text-primary/30 mb-md">qr_code_scanner</span>
-                        <h5 class="font-bold text-body-lg text-on-surface mb-xs">QR Code Scanner Pasif</h5>
-                        <p class="text-label-md max-w-xs">Silakan pilih salah satu perangkat berstatus <strong>Disconnected</strong> di sebelah kiri dan klik <strong>Scan QR</strong> untuk menghubungkan akun WhatsApp Anda.</p>
+                    <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 sm:p-xl flex flex-col items-center justify-center text-center text-on-surface-variant min-h-[250px] sm:min-h-[350px]">
+                        <span class="material-symbols-outlined text-[48px] sm:text-[64px] text-primary/30 mb-2 sm:mb-md">qr_code_scanner</span>
+                        <h5 class="font-bold text-sm sm:text-body-lg text-on-surface mb-1 sm:mb-xs">QR Scanner Pasif</h5>
+                        <p class="text-[11px] sm:text-label-md max-w-xs">Pilih perangkat <strong>Disconnected</strong> &gt; <strong>Scan QR</strong>.</p>
                     </div>
                 @endif
             </div>

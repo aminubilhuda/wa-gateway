@@ -1,74 +1,74 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="max-w-6xl mx-auto space-y-lg">
+    <div class="max-w-6xl mx-auto space-y-3 sm:space-y-lg">
         <!-- Breadcrumbs -->
-        <nav class="flex items-center space-x-xs text-on-surface-variant font-label-md text-label-md mb-lg">
+        <nav class="flex items-center gap-1 sm:space-x-xs text-on-surface-variant font-label-md text-label-md mb-2 sm:mb-lg text-xs sm:text-sm">
             <a class="hover:text-primary" href="{{ route('dashboard') }}">Dashboard</a>
-            <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+            <span class="material-symbols-outlined text-[12px] sm:text-[14px]">chevron_right</span>
             <span class="text-primary font-bold">Message Templates</span>
         </nav>
 
         <!-- Page Header -->
-        <div class="flex justify-between items-start mb-xl">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0 mb-3 sm:mb-xl">
             <div>
-                <h2 class="font-headline-lg text-headline-lg text-on-surface mb-xs">Message Templates</h2>
-                <p class="font-body-md text-body-md text-on-surface-variant max-w-2xl">
-                    Kelola draf pesan WhatsApp Anda di sini untuk mempermudah pembuatan kampanye penyiaran (*Campaigns*).
+                <h2 class="font-headline-lg-mobile lg:font-headline-lg text-headline-lg-mobile lg:text-headline-lg text-on-surface mb-1 sm:mb-xs">Message Templates</h2>
+                <p class="text-sm sm:text-body-md text-body-md text-on-surface-variant max-w-2xl">
+                    Kelola draf pesan WhatsApp untuk kampanye.
                 </p>
             </div>
-            <button onclick="toggleAddTemplateModal(true)" class="bg-primary text-on-primary px-lg py-sm rounded-lg font-bold hover:brightness-110 active:scale-95 transition-all flex items-center gap-xs shadow-md">
-                <span class="material-symbols-outlined text-[20px]">add_circle</span>
+            <button onclick="toggleAddTemplateModal(true)" class="bg-primary text-on-primary px-3 sm:px-lg py-1.5 sm:py-sm rounded-lg font-bold hover:brightness-110 active:scale-95 transition-all flex items-center gap-1 sm:gap-xs shadow-md text-xs sm:text-sm w-full sm:w-auto justify-center">
+                <span class="material-symbols-outlined text-[16px] sm:text-[20px]">add_circle</span>
                 <span>Buat Templat</span>
             </button>
         </div>
 
         @if(session('success'))
-            <div class="bg-green-100 border border-green-400 text-green-700 px-lg py-md rounded-xl mb-lg">
+            <div class="bg-green-100 border border-green-400 text-green-700 px-3 sm:px-lg py-2 sm:py-md rounded-xl mb-3 sm:mb-lg text-xs sm:text-sm">
                 {{ session('success') }}
             </div>
         @endif
 
-        <!-- Templates Grid (Bento Style) -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-lg">
+        <!-- Templates Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-lg">
             @forelse($templates as $tmp)
-                <div class="bg-surface-container-lowest border border-outline-variant p-lg rounded-xl flex flex-col justify-between hover:shadow-md transition-shadow">
-                    <div class="space-y-sm">
+                <div class="bg-surface-container-lowest border border-outline-variant p-3 sm:p-lg rounded-xl flex flex-col justify-between hover:shadow-md transition-shadow">
+                    <div class="space-y-1 sm:space-y-sm">
                         <div class="flex justify-between items-start">
-                            <h4 class="font-bold text-headline-sm text-on-surface truncate pr-md">{{ $tmp->title }}</h4>
-                            <span class="material-symbols-outlined text-primary/40">description</span>
+                            <h4 class="font-bold text-sm sm:text-headline-sm text-on-surface truncate pr-2 sm:pr-md">{{ $tmp->title }}</h4>
+                            <span class="material-symbols-outlined text-primary/40 text-[18px] sm:text-[24px] flex-shrink-0">description</span>
                         </div>
-                        <div class="p-sm bg-surface-container-low rounded-lg border border-outline-variant/30 min-h-[100px]">
-                            <p class="text-body-md text-on-surface-variant whitespace-pre-line line-clamp-4">{{ $tmp->message_body }}</p>
+                        <div class="p-1.5 sm:p-sm bg-surface-container-low rounded-lg border border-outline-variant/30 min-h-[60px] sm:min-h-[100px]">
+                            <p class="text-xs sm:text-body-md text-on-surface-variant whitespace-pre-line line-clamp-3 sm:line-clamp-4">{{ $tmp->message_body }}</p>
                         </div>
                     </div>
                     
-                    <div class="flex justify-between items-center mt-md pt-sm border-t border-outline-variant/30">
-                        <button onclick="copyTemplateContent(this, {{ \Illuminate\Support\Js::from($tmp->message_body) }})" class="px-sm py-xs bg-surface-container text-on-surface-variant hover:bg-surface-container-high rounded-lg text-label-md font-bold transition-all flex items-center gap-xs" title="Salin ke clipboard">
-                            <span class="material-symbols-outlined text-[16px]">content_copy</span>
+                    <div class="flex justify-between items-center mt-2 sm:mt-md pt-1.5 sm:pt-sm border-t border-outline-variant/30">
+                        <button onclick="copyTemplateContent(this, {{ \Illuminate\Support\Js::from($tmp->message_body) }})" class="px-1.5 sm:px-sm py-0.5 sm:py-xs bg-surface-container text-on-surface-variant hover:bg-surface-container-high rounded-lg text-[10px] sm:text-label-md font-bold transition-all flex items-center gap-0.5 sm:gap-xs" title="Salin">
+                            <span class="material-symbols-outlined text-[14px] sm:text-[16px]">content_copy</span>
                             <span>Salin</span>
                         </button>
-                        <div class="flex gap-xs">
-                            <button onclick="openEditTemplateModal({{ \Illuminate\Support\Js::from($tmp) }})" class="px-sm py-xs bg-primary/10 text-primary hover:bg-primary/20 rounded-lg text-label-md font-bold transition-all flex items-center gap-xs">
-                                <span class="material-symbols-outlined text-[16px]">edit</span>
-                                <span>Edit</span>
+                        <div class="flex gap-1 sm:gap-xs">
+                            <button onclick="openEditTemplateModal({{ \Illuminate\Support\Js::from($tmp) }})" class="px-1.5 sm:px-sm py-0.5 sm:py-xs bg-primary/10 text-primary hover:bg-primary/20 rounded-lg text-[10px] sm:text-label-md font-bold transition-all flex items-center gap-0.5 sm:gap-xs">
+                                <span class="material-symbols-outlined text-[14px] sm:text-[16px]">edit</span>
+                                <span class="hidden xs:inline">Edit</span>
                             </button>
-                            <form action="{{ route('templates.destroy', $tmp->id) }}" method="POST" onsubmit="return confirm('Hapus templat pesan ini?');">
+                            <form action="{{ route('templates.destroy', $tmp->id) }}" method="POST" onsubmit="return confirm('Hapus templat ini?');">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="px-sm py-xs bg-error/10 text-error hover:bg-error/20 rounded-lg text-label-md font-bold transition-all flex items-center gap-xs">
-                                    <span class="material-symbols-outlined text-[16px]">delete</span>
-                                    <span>Hapus</span>
+                                <button type="submit" class="px-1.5 sm:px-sm py-0.5 sm:py-xs bg-error/10 text-error hover:bg-error/20 rounded-lg text-[10px] sm:text-label-md font-bold transition-all flex items-center gap-0.5 sm:gap-xs">
+                                    <span class="material-symbols-outlined text-[14px] sm:text-[16px]">delete</span>
+                                    <span class="hidden xs:inline">Hapus</span>
                                 </button>
                             </form>
                         </div>
                     </div>
                 </div>
             @empty
-                <div class="col-span-3 bg-surface-container-lowest border border-outline-variant p-xl rounded-xl text-center text-on-surface-variant">
-                    <span class="material-symbols-outlined text-[48px] text-tertiary/30 mb-sm">sticky_note_2</span>
-                    <h5 class="font-bold text-body-lg text-on-surface mb-xs">Belum Ada Templat Pesan</h5>
-                    <p class="text-label-md">Gunakan tombol <strong>Buat Templat</strong> untuk mendaftarkan draf tulisan pertama Anda.</p>
+                <div class="col-span-1 sm:col-span-2 lg:col-span-3 bg-surface-container-lowest border border-outline-variant p-4 sm:p-xl rounded-xl text-center text-on-surface-variant">
+                    <span class="material-symbols-outlined text-[36px] sm:text-[48px] text-tertiary/30 mb-1 sm:mb-sm">sticky_note_2</span>
+                    <h5 class="font-bold text-sm sm:text-body-lg text-on-surface mb-0.5 sm:mb-xs">Belum Ada Templat</h5>
+                    <p class="text-xs sm:text-label-md">Klik <strong>Buat Templat</strong> untuk memulai.</p>
                 </div>
             @endforelse
         </div>
