@@ -31,10 +31,16 @@
             <h1 class="font-headline-lg-mobile lg:font-headline-lg text-headline-lg-mobile lg:text-headline-lg text-on-surface">Auto Reply Management</h1>
             <p class="text-body-lg text-body-lg text-on-surface-variant mt-xs text-sm">Set up automated responses based on keywords.</p>
         </div>
-        <button onclick="document.getElementById('addRuleModal').classList.remove('hidden')" class="bg-primary-container text-on-primary-container px-3 sm:px-lg py-1.5 sm:py-sm rounded-lg font-bold flex items-center gap-1 sm:gap-xs hover:shadow-lg active:scale-95 transition-all text-xs sm:text-sm w-full sm:w-auto justify-center">
-            <span class="material-symbols-outlined text-[16px] sm:text-[20px]" data-icon="add">add</span>
-            Tambah Aturan
-        </button>
+        <div class="flex gap-2 w-full sm:w-auto">
+            <a href="#conversations-section" class="px-2 sm:px-md py-1 sm:py-1.5 border border-outline-variant text-on-surface rounded-lg font-bold hover:bg-surface-container-low transition-colors text-xs sm:text-sm flex items-center gap-1">
+                <span class="material-symbols-outlined text-[16px] sm:text-[18px]">chat</span>
+                <span class="hidden sm:inline">Conversations</span>
+            </a>
+            <button onclick="document.getElementById('addRuleModal').classList.remove('hidden')" class="bg-primary-container text-on-primary-container px-3 sm:px-lg py-1.5 sm:py-sm rounded-lg font-bold flex items-center gap-1 sm:gap-xs hover:shadow-lg active:scale-95 transition-all text-xs sm:text-sm w-full sm:w-auto justify-center">
+                <span class="material-symbols-outlined text-[16px] sm:text-[20px]" data-icon="add">add</span>
+                Tambah Aturan
+            </button>
+        </div>
     </div>
     
     <!-- Stats Bento Grid -->
@@ -186,6 +192,81 @@
             <p class="text-xs sm:text-body-md text-on-primary-container/80">Buat menu utama, lalu sub-menu. User yang mengetik keyword akan melihat sub-menu. Ketik <strong>"back"</strong> untuk kembali.</p>
         </div>
     </div>
+    </div>
+
+    <!-- Conversations Section -->
+    <div id="conversations-section" class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden mt-3 sm:mt-lg">
+        <div class="px-3 sm:px-lg py-2 sm:py-md bg-surface-container-low border-b border-outline-variant flex justify-between items-center">
+            <h4 class="font-headline-md text-headline-md text-sm sm:text-base text-on-surface">Recent Incoming Conversations</h4>
+            <span class="text-[10px] sm:text-label-md text-outline">Auto-reply & direct messages</span>
+        </div>
+        <div class="overflow-x-auto overflow-y-hidden">
+            <table class="w-full text-left border-collapse min-w-[500px]">
+                <thead>
+                    <tr class="bg-surface-container-low/50 text-[10px] sm:text-label-sm text-outline border-b border-outline-variant">
+                        <th class="px-2 sm:px-lg py-2 sm:py-3 font-semibold uppercase tracking-wider">Contact</th>
+                        <th class="px-2 sm:px-lg py-2 sm:py-3 font-semibold uppercase tracking-wider">Last Message</th>
+                        <th class="px-2 sm:px-lg py-2 sm:py-3 font-semibold uppercase tracking-wider">Status</th>
+                        <th class="px-2 sm:px-lg py-2 sm:py-3 font-semibold uppercase tracking-wider">Time</th>
+                        <th class="px-2 sm:px-lg py-2 sm:py-3 font-semibold uppercase tracking-wider text-right">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-outline-variant">
+                    @php
+                        $conversations = \App\Models\MessageLog::whereNull('campaign_id')
+                            ->with('contact')
+                            ->select('contact_id', \DB::raw('MAX(created_at) as last_time, COUNT(*) as msg_count'))
+                            ->groupBy('contact_id')
+                            ->orderBy('last_time', 'desc')
+                            ->limit(20)
+                            ->get();
+                    @endphp
+                    @forelse($conversations as $conv)
+                    <tr class="hover:bg-surface-container/50 transition-colors">
+                        <td class="px-2 sm:px-lg py-1.5 sm:py-md">
+                            <span class="font-bold text-xs sm:text-body-md text-on-surface">{{ $conv->contact->name ?? 'Unknown' }}</span>
+                            <p class="text-[10px] sm:text-label-sm text-outline">{{ $conv->contact->phone_number ?? '' }}</p>
+                        </td>
+                        <td class="px-2 sm:px-lg py-1.5 sm:py-md text-xs text-on-surface-variant truncate max-w-[120px] sm:max-w-xs">
+                            {{ \App\Models\MessageLog::where('contact_id', $conv->contact_id)->whereNull('campaign_id')->latest()->value('message_body') }}
+                        </td>
+                        <td class="px-2 sm:px-lg py-1.5 sm:py-md">
+                            <span class="text-xs text-on-surface-variant">{{ $conv->msg_count }} messages</span>
+                        </td>
+                        <td class="px-2 sm:px-lg py-1.5 sm:py-md text-[10px] sm:text-label-sm text-outline whitespace-nowrap">
+                            {{ \Carbon\Carbon::parse($conv->last_time)->diffForHumans() }}
+                        </td>
+                        <td class="px-2 sm:px-lg py-1.5 sm:py-md text-right">
+                            <button onclick="showConversation({{ $conv->contact_id }})" class="text-primary hover:text-primary/80 transition-colors">
+                                <span class="material-symbols-outlined text-[18px]">forum</span>
+                            </button>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="5" class="px-2 sm:px-lg py-1.5 sm:py-md text-center text-on-surface-variant text-xs">Belum ada percakapan.</td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="conversationModal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-base">
+        <div class="bg-white rounded-xl shadow-lg w-full max-w-lg max-h-[80vh] flex flex-col">
+            <div class="px-lg py-md border-b border-outline-variant flex justify-between items-center sticky top-0 bg-white rounded-t-xl">
+                <h3 class="font-headline-sm text-headline-sm text-on-surface" id="conversationTitle">Conversation</h3>
+                <button onclick="document.getElementById('conversationModal').classList.add('hidden')" class="text-on-surface-variant hover:text-error">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div id="conversationMessages" class="flex-1 overflow-y-auto p-lg space-y-3 bg-surface-container-low">
+                <div class="text-center text-on-surface-variant text-xs">Loading...</div>
+            </div>
+            <div class="px-lg py-md border-t border-outline-variant bg-white">
+                <button onclick="document.getElementById('conversationModal').classList.add('hidden')" class="w-full py-sm bg-primary text-white rounded-lg font-bold hover:brightness-105">Tutup</button>
+            </div>
+        </div>
     </div>
 
     <!-- Modal Tambah Aturan -->
@@ -378,6 +459,45 @@
                 }).catch(err => console.error('Gagal toggle aturan', err));
             });
         });
+
+        function showConversation(contactId) {
+            const modal = document.getElementById('conversationModal');
+            const container = document.getElementById('conversationMessages');
+            document.getElementById('conversationTitle').textContent = 'Conversation';
+            container.innerHTML = '<div class="text-center text-on-surface-variant text-xs py-8">Loading...</div>';
+            modal.classList.remove('hidden');
+            fetch(`/api/conversation/${contactId}`, {
+                headers: { 'Accept': 'application/json' }
+            })
+            .then(res => res.json())
+            .then(data => {
+                container.innerHTML = '';
+                if (data.length === 0) {
+                    container.innerHTML = '<div class="text-center text-on-surface-variant text-xs py-8">No messages</div>';
+                    return;
+                }
+                document.getElementById('conversationTitle').textContent = 'Conversation with ' + (data[0].contact?.name || 'Unknown');
+                data.forEach(msg => {
+                    const isOutgoing = msg.status === 'sent' || msg.status === 'failed';
+                    const div = document.createElement('div');
+                    div.className = isOutgoing ? 'flex justify-end' : 'flex justify-start';
+                    div.innerHTML = `
+                        <div class="max-w-[75%] ${isOutgoing ? 'bg-primary-container text-on-primary-container' : 'bg-white text-on-surface'} rounded-lg p-3 shadow-sm">
+                            <p class="text-xs sm:text-sm">${msg.message_body || '(empty)'}</p>
+                            <div class="flex justify-end items-center gap-1 mt-1">
+                                <span class="text-[9px] ${isOutgoing ? 'text-on-primary-container/70' : 'text-on-surface-variant'}">${msg.created_at ? new Date(msg.created_at).toLocaleString() : ''}</span>
+                                ${msg.status === 'sent' ? '<span class="material-symbols-outlined text-[12px] text-blue-500">done_all</span>' : ''}
+                                ${msg.status === 'failed' ? '<span class="material-symbols-outlined text-[12px] text-red-500">error</span>' : ''}
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(div);
+                });
+            })
+            .catch(() => {
+                container.innerHTML = '<div class="text-center text-red-500 text-xs py-8">Failed to load</div>';
+            });
+        }
 
         // Hover effect for stats cards
         document.querySelectorAll('.auto-reply-card').forEach(card => {

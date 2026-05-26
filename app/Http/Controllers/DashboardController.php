@@ -6,11 +6,11 @@ use App\Models\Campaign;
 use App\Models\Contact;
 use App\Models\Device;
 use App\Models\MessageLog;
-use App\Services\FonnteService;
+use App\Services\WhatsAppService;
 
 class DashboardController extends Controller
 {
-    public function index(FonnteService $fonnte)
+    public function index(WhatsAppService $whatsapp)
     {
         $totalContacts = Contact::count();
         $totalSent = MessageLog::where('status', 'sent')->count();

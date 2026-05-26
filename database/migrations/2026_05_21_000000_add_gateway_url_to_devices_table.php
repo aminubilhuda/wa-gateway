@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('devices', function (Blueprint $table) {
-            $table->string('gateway_url')->nullable()->default('https://api.fonnte.com')->after('token');
+            $table->string('gateway_url')->nullable()->default('http://localhost:3000')->after('token');
         });
     }
 

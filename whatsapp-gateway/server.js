@@ -12,7 +12,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 const PORT = process.env.GATEWAY_PORT || 3000;
-const LARAVEL_WEBHOOK_URL = process.env.LARAVEL_WEBHOOK_URL || 'http://127.0.0.1:8000/webhook/fonnte';
+const LARAVEL_WEBHOOK_URL = process.env.LARAVEL_WEBHOOK_URL || 'http://127.0.0.1:8000/webhook/whatsapp';
 
 // Webhook signature helper
 function signPayload(payload) {
@@ -288,6 +288,11 @@ async function getOrCreateClient(token) {
 
     client.on('message', async (msg) => {
         try {
+            // Skip empty messages
+            if (!msg.body || msg.body.trim() === '') {
+                return;
+            }
+
             const sender = await resolveSender(msg);
             
             logToFile(`[Gateway] Message event - from: ${msg.from}, author: ${msg.author || 'N/A'}, body: "${msg.body}", isGroup: ${msg.isGroup}, fromMe: ${msg.fromMe}`);
@@ -440,7 +445,7 @@ app.post('/send', async (req, res) => {
             const messages = typeof data === 'string' ? JSON.parse(data) : data;
             logToFile(`[Gateway] Processing bulk dispatch of ${messages.length} messages...`);
             
-            // Run bulk sending in background so HTTP response is returned immediately (mimicking Fonnte)
+            // Run bulk sending in background so HTTP response is returned immediately (async gateway)
             (async () => {
                 for (const msg of messages) {
                     try {
@@ -460,7 +465,7 @@ app.post('/send', async (req, res) => {
             // Single pengiriman (with optional file)
             logToFile(`[Gateway] Single message - target: ${target}, message: ${message.substring(0, 50)}..., url: ${req.body.url || 'none'}`);
             
-            // Run in background to avoid Laravel timeout (mimicking Fonnte behavior)
+            // Run in background to avoid Laravel timeout (async gateway)
             (async () => {
                 try {
                     await sendMessageWithFile(state.client, target, message, req.body.url);

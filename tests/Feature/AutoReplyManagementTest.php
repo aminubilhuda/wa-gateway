@@ -4,7 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\AutoReply;
 use App\Models\Contact;
-use App\Services\FonnteService;
+use App\Services\WhatsAppService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -69,7 +69,7 @@ class AutoReplyManagementTest extends TestCase
 
     public function test_webhook_incoming_message_triggers_auto_reply_and_logs_it()
     {
-        $this->mock(FonnteService::class, function ($mock) {
+        $this->mock(WhatsAppService::class, function ($mock) {
             $mock->shouldReceive('sendMessage')
                 ->with('081234567890@c.us', 'Harga paket mulai dari 50rb.', null)
                 ->once()
@@ -85,7 +85,7 @@ class AutoReplyManagementTest extends TestCase
 
         // Post to message webhook
         $data = ['sender' => '081234567890', 'message' => 'harga'];
-        $response = $this->postJson(route('webhook.fonnte.message'), $data, $this->webhookHeaders($data));
+        $response = $this->postJson(route('webhook.whatsapp.message'), $data, $this->webhookHeaders($data));
 
         $response->assertStatus(200);
 

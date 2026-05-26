@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Campaign;
 use App\Models\MessageLog;
+use App\Services\WhatsAppService;
 use Illuminate\Http\Request;
 
 class MessageLogController extends Controller
@@ -157,5 +158,38 @@ class MessageLogController extends Controller
         };
 
         return response()->stream($callback, 200, $headers);
+    }
+
+    public function retry(MessageLog $log, WhatsAppService $whatsapp)
+    {
+        $number = $log->contact->phone_number;
+        $response = $whatsapp->sendMessage($number, $log->message_body);
+        if (isset($response['status']) && $response['status'] == true) {
+            $log->update(['status' => 'sent', 'sent_at' => now()]);
+
+            return response()->json(['success' => true, 'message' => 'Pesan berhasil dikirim ulang.']);
+        }
+
+        return response()->json(['success' => false, 'message' => 'Gagal mengirim ulang.'], 400);
+    }
+
+    public function retryAll(Request $request, WhatsAppService $whatsapp)
+    {
+        $query = MessageLog::where('status', 'failed')->with('contact');
+        if ($request->filled('campaign_id')) {
+            $query->where('campaign_id', $request->campaign_id);
+        }
+        $logs = $query->get();
+        $success = 0;
+        foreach ($logs as $log) {
+            $number = $log->contact->phone_number;
+            $response = $whatsapp->sendMessage($number, $log->message_body);
+            if (isset($response['status']) && $response['status'] == true) {
+                $log->update(['status' => 'sent', 'sent_at' => now()]);
+                $success++;
+            }
+        }
+
+        return redirect()->route('reports')->with('success', "Berhasil mengirim ulang $success dari {$logs->count()} pesan gagal.");
     }
 }

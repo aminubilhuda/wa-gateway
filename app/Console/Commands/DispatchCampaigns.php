@@ -7,7 +7,7 @@ use App\Models\Campaign;
 use App\Models\Contact;
 use App\Models\Device;
 use App\Models\MessageLog;
-use App\Services\FonnteService;
+use App\Services\WhatsAppService;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 
@@ -17,7 +17,7 @@ class DispatchCampaigns extends Command
 
     protected $description = 'Dispatch scheduled campaigns that are due';
 
-    public function handle(FonnteService $fonnte): int
+    public function handle(WhatsAppService $whatsapp): int
     {
         $now = now();
         $currentTimeString = $now->format('H:i');
@@ -26,11 +26,21 @@ class DispatchCampaigns extends Command
 
         $campaigns = Campaign::where('is_active', true)
             ->where('status', 'scheduled')
+            ->whereNull('archived_at')
             ->get()
             ->filter(function ($campaign) use ($now, $currentTimeString, $currentDayOfWeek, $currentDayOfMonth) {
                 if (in_array($campaign->schedule_type, ['daily', 'weekly', 'monthly'])) {
                     if ($campaign->last_run_at && Carbon::parse($campaign->last_run_at)->diffInHours($now) < 23) {
                         return false;
+                    }
+
+                    if (! $campaign->last_run_at && $campaign->scheduled_time) {
+                        $scheduled = Carbon::createFromFormat('H:i', $campaign->scheduled_time);
+                        $current = Carbon::createFromFormat('H:i', $currentTimeString);
+
+                        if ($scheduled && $current && abs($scheduled->diffInMinutes($current)) > 1) {
+                            return false;
+                        }
                     }
                 }
 
@@ -54,13 +64,13 @@ class DispatchCampaigns extends Command
         }
 
         foreach ($campaigns as $campaign) {
-            $this->dispatchCampaign($campaign, $fonnte);
+            $this->dispatchCampaign($campaign, $whatsapp);
         }
 
         return Command::SUCCESS;
     }
 
-    protected function dispatchCampaign(Campaign $campaign, FonnteService $fonnte): void
+    protected function dispatchCampaign(Campaign $campaign, WhatsAppService $whatsapp): void
     {
         $campaign->update([
             'status' => 'running',
@@ -134,8 +144,8 @@ class DispatchCampaigns extends Command
             $device = $batch['device'];
 
             if (count($bulk) > 0) {
-                $fonnte->setToken($device->token);
-                $response = $fonnte->sendBulkMessages($bulk);
+                $whatsapp->setToken($device->token);
+                $response = $whatsapp->sendBulkMessages($bulk);
 
                 if (isset($response['status']) && $response['status'] == true) {
                     MessageLog::whereIn('id', $logs)->update(['status' => 'sent']);

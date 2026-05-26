@@ -8,7 +8,8 @@ use App\Models\Contact;
 use App\Models\Device;
 use App\Models\MenuSession;
 use App\Models\MessageLog;
-use App\Services\FonnteService;
+use App\Models\WebhookLog;
+use App\Services\WhatsAppService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -16,7 +17,7 @@ class WebhookController extends Controller
 {
     private function verifySignature(Request $request): bool
     {
-        $secret = config('fonnte.webhook_secret');
+        $secret = config('whatsapp.webhook_secret');
         if (! $secret) {
             return true;
         }
@@ -33,26 +34,33 @@ class WebhookController extends Controller
     }
 
     /**
-     * Handle device status webhook from Fonnte
+     * Handle device status webhook
      */
     public function device(Request $request)
     {
+        WebhookLog::create([
+            'type' => 'device',
+            'payload' => json_encode($request->all()),
+            'status' => 'received',
+        ]);
+
         if ($request->isMethod('get')) {
             return response()->json([
                 'status' => 'active',
-                'message' => 'Fonnte Device Webhook is online and ready for GET/POST requests.',
+                'message' => 'WhatsApp Device Webhook is online and ready for GET/POST requests.',
             ]);
         }
 
         if (! $this->verifySignature($request)) {
             Log::warning('Webhook device rejected: invalid signature', ['ip' => $request->ip()]);
+
             return response()->json(['success' => false, 'message' => 'Invalid signature.'], 401);
         }
 
         $status = $request->input('status');
         $token = $request->input('token');
 
-        Log::info('Fonnte Device Webhook received', ['status' => $status, 'token' => $token]);
+        Log::info('WhatsApp Device Webhook received', ['status' => $status, 'token' => $token]);
 
         $device = null;
         if ($token) {
@@ -76,17 +84,24 @@ class WebhookController extends Controller
     /**
      * Handle incoming messages for Auto Reply
      */
-    public function message(Request $request, FonnteService $fonnte)
+    public function message(Request $request, WhatsAppService $whatsapp)
     {
+        WebhookLog::create([
+            'type' => 'message',
+            'payload' => json_encode($request->all()),
+            'status' => 'received',
+        ]);
+
         if ($request->isMethod('get')) {
             return response()->json([
                 'status' => 'active',
-                'message' => 'Fonnte Message Webhook is online and ready for GET/POST requests.',
+                'message' => 'WhatsApp Message Webhook is online and ready for GET/POST requests.',
             ]);
         }
 
         if (! $this->verifySignature($request)) {
             Log::warning('Webhook message rejected: invalid signature', ['ip' => $request->ip()]);
+
             return response()->json(['success' => false, 'message' => 'Invalid signature.'], 401);
         }
 
@@ -97,7 +112,7 @@ class WebhookController extends Controller
         $rawSender = $request->input('raw_sender');
         $normalizedSender = $request->input('normalized_sender');
 
-        Log::info('Fonnte Message Webhook received', [
+        Log::info('WhatsApp Message Webhook received', [
             'sender' => $sender,
             'raw_sender' => $rawSender,
             'normalized_sender' => $normalizedSender,
@@ -107,7 +122,7 @@ class WebhookController extends Controller
         ]);
 
         if ($token) {
-            $fonnte->setToken($token);
+            $whatsapp->setToken($token);
         }
 
         if (! $sender) {
@@ -152,7 +167,7 @@ class WebhookController extends Controller
             );
 
             $replyText = 'Anda telah berhasil keluar dari daftar penerima pesan kami. Anda tidak akan menerima pesan blast lagi.';
-            $response = $fonnte->sendMessage($replyTarget, $replyText);
+            $response = $whatsapp->sendMessage($replyTarget, $replyText);
             $status = (isset($response['status']) && $response['status'] == true) ? 'sent' : 'failed';
 
             MessageLog::create([
@@ -177,7 +192,7 @@ class WebhookController extends Controller
                     if ($parentRule) {
                         $children = $parentRule->children()->where('is_active', true)->get();
                         $replyText = $parentRule->response_message."\n\nKetik *back* untuk kembali ke menu sebelumnya.";
-                        $fonnte->sendMessage($replyTarget, $replyText);
+                        $whatsapp->sendMessage($replyTarget, $replyText);
                     }
                 } else {
                     MenuSession::where('phone_number', $sender)->delete();
@@ -187,7 +202,7 @@ class WebhookController extends Controller
                         foreach ($mainMenus as $menu) {
                             $replyText .= "{$menu->keyword} - {$menu->response_message}\n";
                         }
-                        $fonnte->sendMessage($replyTarget, $replyText);
+                        $whatsapp->sendMessage($replyTarget, $replyText);
                     }
                 }
             } else {
@@ -197,7 +212,7 @@ class WebhookController extends Controller
                     foreach ($mainMenus as $menu) {
                         $replyText .= "{$menu->keyword} - {$menu->response_message}\n";
                     }
-                    $fonnte->sendMessage($replyTarget, $replyText);
+                    $whatsapp->sendMessage($replyTarget, $replyText);
                 }
             }
 
@@ -236,7 +251,7 @@ class WebhookController extends Controller
                     } else {
                         $responseMessage .= "\n\nKetik *back* atau *menu* untuk kembali ke menu utama.";
                     }
-                    $response = $fonnte->sendMessage($replyTarget, $responseMessage, $attachmentUrl);
+                    $response = $whatsapp->sendMessage($replyTarget, $responseMessage, $attachmentUrl);
                     $status = 'failed';
                     if (isset($response['status']) && $response['status'] == true) {
                         $status = 'sent';
@@ -268,14 +283,14 @@ class WebhookController extends Controller
                 $children = AutoReply::where('parent_id', $parentRule->id)->where('is_active', true)->get();
                 if ($children->isNotEmpty()) {
                     $replyText = $parentRule->response_message."\n\nKetik *back* untuk kembali ke menu sebelumnya.";
-                    $fonnte->sendMessage($replyTarget, $replyText);
+                    $whatsapp->sendMessage($replyTarget, $replyText);
                 }
             }
 
             return response()->json(['success' => true, 'message' => 'No child match found.']);
         }
 
-        $allRules = AutoReply::where('is_active', true)->get();
+        $allRules = AutoReply::where('is_active', true)->orderBy('parent_id')->orderBy('id')->get();
 
         foreach ($allRules as $rule) {
             $keyword = strtolower($rule->keyword);
@@ -293,7 +308,7 @@ class WebhookController extends Controller
                 if ($children->isNotEmpty()) {
                     MenuSession::createOrUpdateSession($sender, $rule->id);
 
-                    $fonnte->sendMessage($replyTarget, $rule->response_message."\n\nKetik *back* untuk kembali ke menu sebelumnya.");
+                    $whatsapp->sendMessage($replyTarget, $rule->response_message."\n\nKetik *back* untuk kembali ke menu sebelumnya.");
 
                     $rule->increment('trigger_count');
 
@@ -307,7 +322,7 @@ class WebhookController extends Controller
                 }
 
                 $attachmentUrl = $rule->attachment_path ?? null;
-                $response = $fonnte->sendMessage($replyTarget, $rule->response_message, $attachmentUrl);
+                $response = $whatsapp->sendMessage($replyTarget, $rule->response_message, $attachmentUrl);
                 $status = 'failed';
                 if (isset($response['status']) && $response['status'] == true) {
                     $status = 'sent';

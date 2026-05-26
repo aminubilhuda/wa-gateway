@@ -3,7 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Campaign;
-use App\Services\FonnteService;
+use App\Services\WhatsAppService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Tests\TestCase;
@@ -14,8 +14,8 @@ class CampaignCsvTest extends TestCase
 
     public function test_campaign_can_be_stored_with_csv_custom_columns()
     {
-        // Mock FonnteService to prevent actual HTTP request
-        $this->mock(FonnteService::class, function ($mock) {
+        // Mock WhatsAppService to prevent actual HTTP request
+        $this->mock(WhatsAppService::class, function ($mock) {
             $mock->shouldReceive('sendBulkMessages')->andReturn(['status' => true]);
         });
 

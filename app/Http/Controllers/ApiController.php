@@ -6,7 +6,7 @@ use App\Models\Campaign;
 use App\Models\Contact;
 use App\Models\Device;
 use App\Models\MessageLog;
-use App\Services\FonnteService;
+use App\Services\WhatsAppService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -42,7 +42,7 @@ class ApiController extends Controller
         ]);
     }
 
-    public function sendMessage(Request $request, FonnteService $fonnte): JsonResponse
+    public function sendMessage(Request $request, WhatsAppService $whatsapp): JsonResponse
     {
         $validated = $request->validate([
             'target' => 'required|string',
@@ -50,7 +50,7 @@ class ApiController extends Controller
             'url' => 'nullable|string',
         ]);
 
-        $response = $fonnte->sendMessage($validated['target'], $validated['message'], $validated['url'] ?? null);
+        $response = $whatsapp->sendMessage($validated['target'], $validated['message'], $validated['url'] ?? null);
 
         return response()->json($response);
     }

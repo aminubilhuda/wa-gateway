@@ -1,0 +1,2 @@
+php artisan schedule:work
+node server.js di whatsapp-gateway

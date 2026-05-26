@@ -1,11 +1,11 @@
 <!-- SIDE NAV BAR -->
-<aside class="w-[240px] h-dvh overflow-y-auto fixed left-0 top-0 bg-secondary dark:bg-inverse-surface border-r border-outline-variant dark:border-outline flex flex-col px-md pb-md pt-0 space-y-base z-40 -translate-x-full peer-checked:translate-x-0 lg:translate-x-0 transition-transform duration-300 ease-in-out">
+<aside id="sidebar" class="w-[240px] h-dvh overflow-y-auto fixed left-0 top-0 bg-secondary dark:bg-inverse-surface border-r border-outline-variant dark:border-outline flex flex-col px-md pb-md pt-0 space-y-base z-40 -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out">
     <div class="mb-xl px-base pt-md flex items-center justify-between">
         <div>
             <h1 class="font-headline-md text-headline-md font-bold text-on-secondary">WA-Blast Pro</h1>
             <p class="text-label-md text-on-secondary/70">Enterprise SaaS</p>
         </div>
-        <label for="sidebarToggle" class="lg:hidden text-on-secondary/70 hover:text-white transition-colors cursor-pointer p-1 -mr-1">
+        <button onclick="toggleSidebar(false)" class="lg:hidden text-on-secondary/70 hover:text-white transition-colors cursor-pointer p-1 -mr-1">
             <span class="material-symbols-outlined">close</span>
         </label>
     </div>
@@ -37,6 +37,10 @@
         <a class="{{ request()->routeIs('blacklist') ? 'bg-primary-container text-on-primary-container font-bold' : 'text-on-secondary hover:bg-secondary-container/10' }} transition-colors flex items-center gap-md p-md rounded-lg active:scale-95" href="{{ route('blacklist') }}">
             <span class="material-symbols-outlined" data-icon="block" {!! request()->routeIs('blacklist') ? 'style="font-variation-settings: \'FILL\' 1;"' : '' !!}>block</span>
             <span class="font-body-md text-body-md">Blacklist</span>
+        </a>
+        <a class="{{ request()->routeIs('webhook-logs') ? 'bg-primary-container text-on-primary-container font-bold' : 'text-on-secondary hover:bg-secondary-container/10' }} transition-colors flex items-center gap-md p-md rounded-lg active:scale-95" href="{{ route('webhook-logs') }}">
+            <span class="material-symbols-outlined" data-icon="webhook">webhook</span>
+            <span class="font-body-md text-body-md">Webhooks</span>
         </a>
     </nav>
     <div class="mt-auto space-y-xs border-t border-white/10 pt-md">

@@ -4,8 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Contact;
 use App\Models\MessageLog;
-use App\Services\FonnteService;
+use App\Services\WhatsAppService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ContactController extends Controller
@@ -251,7 +252,7 @@ class ContactController extends Controller
         ]);
     }
 
-    public function bulkBroadcast(Request $request, FonnteService $fonnte)
+    public function bulkBroadcast(Request $request, WhatsAppService $whatsapp)
     {
         $request->validate([
             'ids' => 'required|array',
@@ -271,7 +272,7 @@ class ContactController extends Controller
         $successCount = 0;
 
         foreach ($contacts as $contact) {
-            $response = $fonnte->sendMessage($contact->phone_number, $request->message, $attachmentUrl);
+            $response = $whatsapp->sendMessage($contact->phone_number, $request->message, $attachmentUrl);
             $status = 'failed';
             if (isset($response['status']) && $response['status'] == true) {
                 $status = 'sent';
@@ -293,7 +294,7 @@ class ContactController extends Controller
         ]);
     }
 
-    public function sendMessage(Request $request, Contact $contact, FonnteService $fonnte)
+    public function sendMessage(Request $request, Contact $contact, WhatsAppService $whatsapp)
     {
         $validated = $request->validate([
             'message' => 'required|string',
@@ -308,7 +309,7 @@ class ContactController extends Controller
             $attachmentUrl = asset('uploads/attachments/'.$filename);
         }
 
-        $response = $fonnte->sendMessage($contact->phone_number, $validated['message'], $attachmentUrl);
+        $response = $whatsapp->sendMessage($contact->phone_number, $validated['message'], $attachmentUrl);
 
         // Record log
         $status = 'failed';
@@ -327,7 +328,42 @@ class ContactController extends Controller
         if ($status == 'sent') {
             return redirect()->route('contacts')->with('success', 'Pesan langsung berhasil dikirim.');
         } else {
-            return redirect()->route('contacts')->with('error', 'Gagal mengirim pesan langsung: Fonnte API Error.');
+            return redirect()->route('contacts')->with('error', 'Gagal mengirim pesan langsung: WhatsApp Gateway Error.');
         }
+    }
+
+    public function duplicates()
+    {
+        $duplicates = Contact::select('phone_number', DB::raw('GROUP_CONCAT(id) as ids, GROUP_CONCAT(name) as names, COUNT(*) as count'))
+            ->groupBy('phone_number')
+            ->having('count', '>', 1)
+            ->get();
+
+        return view('contacts', [
+            'contacts' => Contact::orderBy('created_at', 'desc')->paginate(10),
+            'segments' => Contact::select('label', DB::raw('count(*) as total'))
+                ->groupBy('label')->whereNotNull('label')->where('label', '<>', '')
+                ->orderBy('total', 'desc')->get(),
+            'duplicates' => $duplicates,
+        ]);
+    }
+
+    public function mergeDuplicates(Request $request)
+    {
+        $phoneNumber = $request->input('phone_number');
+        $contacts = Contact::where('phone_number', $phoneNumber)->orderBy('created_at', 'asc')->get();
+        if ($contacts->count() < 2) {
+            return response()->json(['success' => false, 'message' => 'Tidak ada duplikat.']);
+        }
+        $primary = $contacts->first();
+        $mergedName = $primary->name.' / '.$contacts->skip(1)->pluck('name')->implode(' / ');
+        $mergedLabel = collect([$primary->label, ...$contacts->skip(1)->pluck('label')])
+            ->filter()->unique()->implode(', ');
+        $primary->update(['name' => $mergedName, 'label' => $mergedLabel]);
+        $idsToDelete = $contacts->skip(1)->pluck('id')->toArray();
+        MessageLog::whereIn('contact_id', $idsToDelete)->update(['contact_id' => $primary->id]);
+        Contact::whereIn('id', $idsToDelete)->delete();
+
+        return response()->json(['success' => true, 'message' => 'Duplikat berhasil digabung.']);
     }
 }

@@ -4,7 +4,6 @@ namespace Tests;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
-use Illuminate\Http\Request;
 
 abstract class TestCase extends BaseTestCase
 {
@@ -24,7 +23,7 @@ abstract class TestCase extends BaseTestCase
 
     protected function webhookHeaders(array $data): array
     {
-        $secret = config('fonnte.webhook_secret');
+        $secret = config('whatsapp.webhook_secret');
         $payload = json_encode($data);
         $signature = hash_hmac('sha256', $payload, $secret);
 

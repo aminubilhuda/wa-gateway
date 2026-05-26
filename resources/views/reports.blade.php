@@ -12,6 +12,13 @@
                 <span class="material-symbols-outlined text-[16px] sm:text-[20px]" data-icon="file_download">file_download</span>
                 Export CSV
             </a>
+            <form action="{{ route('reports.retry-all') }}" method="POST" class="inline">
+                @csrf
+                <button type="submit" class="flex items-center gap-1 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-error text-white font-label-md rounded-lg hover:brightness-110 shadow-lg shadow-error/20 transition-all active:scale-95 text-xs sm:text-sm">
+                    <span class="material-symbols-outlined text-[16px] sm:text-[20px]">refresh</span>
+                    Retry Failed
+                </button>
+            </form>
         </div>
     </div>
 
@@ -146,7 +153,14 @@
                             </div>
                         </td>
                         <td class="px-2 sm:px-lg py-1.5 sm:py-md text-right">
-                            <button onclick="showLogDetails({{ json_encode($log) }})" class="text-outline hover:text-primary transition-colors" title="View Details"><span class="material-symbols-outlined text-[16px] sm:text-[20px]" data-icon="info">info</span></button>
+                            <div class="flex justify-end items-center gap-1">
+                                @if($log->status == 'failed')
+                                <button onclick="retryMessage({{ $log->id }})" class="text-error hover:text-primary transition-colors" title="Retry">
+                                    <span class="material-symbols-outlined text-[16px] sm:text-[20px]">refresh</span>
+                                </button>
+                                @endif
+                                <button onclick="showLogDetails({{ json_encode($log) }})" class="text-outline hover:text-primary transition-colors" title="View Details"><span class="material-symbols-outlined text-[16px] sm:text-[20px]" data-icon="info">info</span></button>
+                            </div>
                         </td>
                     </tr>
                     @empty
@@ -331,5 +345,19 @@
                 this.classList.add('hidden');
             }
         });
+
+        function retryMessage(logId) {
+            if (!confirm('Kirim ulang pesan ini?')) return;
+            fetch(`/reports/${logId}/retry`, {
+                method: 'POST',
+                headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) { location.reload(); }
+                else { alert(data.message); }
+            })
+            .catch(() => alert('Gagal mengirim ulang.'));
+        }
     </script>
 @endpush

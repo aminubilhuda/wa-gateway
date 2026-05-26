@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Contact;
+use App\Services\WhatsAppService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Tests\TestCase;
@@ -137,6 +138,10 @@ class ContactManagementTest extends TestCase
 
     public function test_contacts_bulk_broadcast()
     {
+        $this->mock(WhatsAppService::class, function ($mock) {
+            $mock->shouldReceive('sendMessage')->andReturn(['status' => true]);
+        });
+
         $contact1 = Contact::create(['name' => 'Budi Reseller', 'phone_number' => '6281234567890', 'label' => 'Reseller']);
         $contact2 = Contact::create(['name' => 'Ani Leads', 'phone_number' => '6281234567891', 'label' => 'Leads']);
 

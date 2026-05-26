@@ -1,6 +1,6 @@
 # Walkthrough Pengerjaan: Integrasi Self-Hosted WhatsApp Web Gateway (whatsapp-web.js)
 
-Berikut adalah panduan lengkap pengerjaan dan konfigurasi untuk migrasi dari Fonnte API ke **WhatsApp Web Gateway mandiri (self-hosted)** menggunakan pustaka **whatsapp-web.js** di Node.js, beserta seluruh fitur lanjutan yang sudah terpasang sebelumnya.
+Berikut adalah panduan lengkap pengerjaan dan konfigurasi untuk migrasi ke WhatsApp Web Gateway ke **WhatsApp Web Gateway mandiri (self-hosted)** menggunakan pustaka **whatsapp-web.js** di Node.js, beserta seluruh fitur lanjutan yang sudah terpasang sebelumnya.
 
 ---
 
@@ -9,18 +9,18 @@ Berikut adalah panduan lengkap pengerjaan dan konfigurasi untuk migrasi dari Fon
 ### 1. WhatsApp Web Gateway (Node.js) - Baru!
 * **Aplikasi Gateway Mandiri**: Dibuat di dalam folder [whatsapp-gateway/](file:///d:/PROJECT/WA-BLAST/whatsapp-gateway) dengan komponen:
   * `package.json`: Menyimpan dependensi Express, whatsapp-web.js (v1.26.0), qrcode, axios, dan dotenv.
-  * `server.js`: Menangani HTTP endpoints yang meniru format Fonnte API secara persis, mengelola sesi otentikasi multi-perangkat via `LocalAuth` (disimpan di subfolder `.wwebjs_auth/`), dan mengontrol alur pengiriman asinkron dengan jeda kirim kustom.
+  * `server.js`: Menangani HTTP endpoints yang meniru format WhatsApp Gateway API secara persis, mengelola sesi otentikasi multi-perangkat via `LocalAuth` (disimpan di subfolder `.wwebjs_auth/`), dan mengontrol alur pengiriman asinkron dengan jeda kirim kustom.
 * **Integrasi dengan Laravel**:
   * Peta REST API:
     * `/device`: Mengecek status koneksi sesi.
     * `/qr`: Menginisialisasi client WhatsApp Web di latar belakang dan mengembalikan QR Code instan berbasis gambar base64 PNG yang dimuat langsung ke dashboard Settings.
     * `/disconnect`: Keluar dari sesi WhatsApp Web secara aman dan menghapus file otentikasi sesi di server.
     * `/send`: Mengirimkan pesan tunggal maupun antrean pesan massal (bulk) berurutan menggunakan kalkulasi delay dinamis.
-  * **Webhook Terintegrasi**: Pesan masuk yang diterima oleh Node.js diteruskan secara otomatis ke Laravel Webhook (`/webhook/fonnte/message`) untuk auto-reply dan proses daftar hitam otomatis.
+  * **Webhook Terintegrasi**: Pesan masuk yang diterima oleh Node.js diteruskan secara otomatis ke Laravel Webhook (`/webhook/whatsapp/message`) untuk auto-reply dan proses daftar hitam otomatis.
 
 ### 2. Penyelarasan di Laravel
-* **Gateway Switcher Dinamis**: Menambahkan variabel `WHATSAPP_GATEWAY_URL` di berkas [.env](file:///d:/PROJECT/WA-BLAST/.env) dan [.env.example](file:///d:/PROJECT/WA-BLAST/.env.example). Secara default diatur ke `https://api.fonnte.com`, dan dapat dialihkan ke `http://127.0.0.1:3000` untuk mengaktifkan gateway mandiri.
-* **Konstruktor FonnteService**: Diperbarui pada [FonnteService.php](file:///d:/PROJECT/WA-BLAST/app/Services/FonnteService.php) agar mengambil nilai base URL dinamis dari variabel `.env` tersebut.
+* **Gateway Switcher Dinamis**: Menambahkan variabel `WHATSAPP_GATEWAY_URL` di berkas [.env](file:///d:/PROJECT/WA-BLAST/.env) dan [.env.example](file:///d:/PROJECT/WA-BLAST/.env.example). Secara default diatur ke `http://localhost:3000`, dan dapat dialihkan ke `http://127.0.0.1:3000` untuk mengaktifkan gateway mandiri.
+* **Konstruktor FonnteService**: Diperbarui pada [WhatsAppService.php](file:///d:/PROJECT/WA-BLAST/app/Services/WhatsAppService.php) agar mengambil nilai base URL dinamis dari variabel `.env` tersebut.
 * **Multi-Device Webhook Checker**: Diperbarui pada [WebhookController.php](file:///d:/PROJECT/WA-BLAST/app/Http/Controllers/WebhookController.php) agar pencocokan status koneksi perangkat dari webhook disesuaikan berdasarkan kecocokan token perangkat (bukan hanya memperbarui perangkat baris pertama).
 
 ### 3. Fitur Kelas Enterprise Lainnya (Sudah Berfungsi & Teruji)

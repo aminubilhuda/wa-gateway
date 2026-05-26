@@ -7,7 +7,7 @@ use App\Models\Contact;
 use App\Models\Device;
 use App\Models\MessageLog;
 use App\Models\MessageTemplate;
-use App\Services\FonnteService;
+use App\Services\WhatsAppService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -15,14 +15,14 @@ class CampaignController extends Controller
 {
     public function index()
     {
-        $campaigns = Campaign::orderBy('created_at', 'desc')->paginate(10);
+        $campaigns = Campaign::whereNull('archived_at')->orderBy('created_at', 'desc')->paginate(10);
         $labels = Contact::whereNotNull('label')->where('label', '!=', '')->distinct()->pluck('label');
         $templates = MessageTemplate::orderBy('title', 'asc')->get();
 
         return view('campaigns', compact('campaigns', 'labels', 'templates'));
     }
 
-    public function store(Request $request, FonnteService $fonnte)
+    public function store(Request $request, WhatsAppService $whatsapp)
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -234,7 +234,7 @@ class CampaignController extends Controller
             }
 
             if (count($bulkData) > 0) {
-                $response = $fonnte->sendBulkMessages($bulkData);
+                $response = $whatsapp->sendBulkMessages($bulkData);
 
                 if (isset($response['status']) && $response['status'] == true) {
                     MessageLog::whereIn('id', $logIds)->update(['status' => 'sent']);
@@ -245,7 +245,7 @@ class CampaignController extends Controller
                     MessageLog::whereIn('id', $logIds)->update(['status' => 'failed']);
                     $campaign->update(['status' => 'failed']);
 
-                    return redirect()->route('campaigns')->with('error', 'Gagal mengirim kampanye. Fonnte API Error.');
+                    return redirect()->route('campaigns')->with('error', 'Gagal mengirim kampanye. WhatsApp Gateway Error.');
                 }
             }
 
@@ -301,7 +301,38 @@ class CampaignController extends Controller
         return redirect()->route('campaigns')->with('success', 'Kampanye/Jadwal berhasil dihapus.');
     }
 
-    public function update(Request $request, Campaign $campaign, FonnteService $fonnte)
+    public function archive(Request $request, Campaign $campaign)
+    {
+        $campaign->update(['archived_at' => now()]);
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json(['status' => 'success', 'message' => 'Kampanye berhasil diarsipkan.']);
+        }
+
+        return redirect()->route('campaigns')->with('success', 'Kampanye berhasil diarsipkan.');
+    }
+
+    public function restore(Request $request, Campaign $campaign)
+    {
+        $campaign->update(['archived_at' => null]);
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json(['status' => 'success', 'message' => 'Kampanye berhasil dikembalikan.']);
+        }
+
+        return redirect()->route('campaigns')->with('success', 'Kampanye berhasil dikembalikan.');
+    }
+
+    public function archived()
+    {
+        $campaigns = Campaign::whereNotNull('archived_at')->orderBy('archived_at', 'desc')->paginate(10);
+        $labels = Contact::whereNotNull('label')->where('label', '!=', '')->distinct()->pluck('label');
+        $templates = MessageTemplate::orderBy('title', 'asc')->get();
+
+        return view('campaigns', compact('campaigns', 'labels', 'templates'));
+    }
+
+    public function update(Request $request, Campaign $campaign, WhatsAppService $whatsapp)
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -522,7 +553,7 @@ class CampaignController extends Controller
             }
 
             if (count($bulkData) > 0) {
-                $response = $fonnte->sendBulkMessages($bulkData);
+                $response = $whatsapp->sendBulkMessages($bulkData);
 
                 if (isset($response['status']) && $response['status'] == true) {
                     MessageLog::whereIn('id', $logIds)->update(['status' => 'sent']);
@@ -533,7 +564,7 @@ class CampaignController extends Controller
                     MessageLog::whereIn('id', $logIds)->update(['status' => 'failed']);
                     $campaign->update(['status' => 'failed']);
 
-                    return redirect()->route('campaigns')->with('error', 'Gagal mengirim kampanye. Fonnte API Error.');
+                    return redirect()->route('campaigns')->with('error', 'Gagal mengirim kampanye. WhatsApp Gateway Error.');
                 }
             }
 

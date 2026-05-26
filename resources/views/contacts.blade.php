@@ -12,6 +12,10 @@
                 <span class="material-symbols-outlined text-[16px] sm:text-[20px]">download</span>
                 <span class="hidden xs:inline">Export CSV</span>
             </button>
+            <button onclick="window.location.href='{{ route('contacts.duplicates') }}'" class="px-2 sm:px-md py-1.5 sm:py-sm bg-surface-container-lowest border border-outline-variant text-secondary font-bold rounded-lg flex items-center gap-1 sm:space-x-xs hover:bg-amber-50 hover:text-amber-700 active:scale-95 transition-all text-xs sm:text-sm">
+                <span class="material-symbols-outlined text-[16px] sm:text-[20px]">merge</span>
+                <span class="hidden xs:inline">Duplicates</span>
+            </button>
             <button onclick="document.getElementById('importContactsModal').classList.remove('hidden')" class="px-2 sm:px-md py-1.5 sm:py-sm bg-surface-container-lowest border border-outline-variant text-secondary font-bold rounded-lg flex items-center gap-1 sm:space-x-xs hover:bg-surface-container-low active:scale-95 transition-all text-xs sm:text-sm">
                 <span class="material-symbols-outlined text-[16px] sm:text-[20px]">upload_file</span>
                 <span class="hidden xs:inline">Import</span>
@@ -134,8 +138,8 @@
                                     <button type="button" onclick="openEditModal({{ $contact->id }}, {{ \Illuminate\Support\Js::from($contact->name) }}, {{ \Illuminate\Support\Js::from($contact->phone_number) }}, {{ \Illuminate\Support\Js::from($contact->label ?? '') }}, {{ $contact->is_active ? 'true' : 'false' }})" class="text-on-surface-variant hover:text-primary transition-colors p-0.5 sm:p-0" title="Edit Contact">
                                         <span class="material-symbols-outlined text-[16px] sm:text-[24px]">edit</span>
                                     </button>
-                                    <button type="button" onclick="openDirectMessageModal({{ $contact->id }}, '{{ addslashes($contact->name) }}', '{{ $contact->phone_number }}')" class="text-on-surface-variant hover:text-primary transition-colors p-0.5 sm:p-0" title="Send Direct Message">
-                                        <span class="material-symbols-outlined text-[16px] sm:text-[24px]">chat</span>
+                                    <button type="button" onclick="openScheduleModal({{ $contact->id }}, '{{ addslashes($contact->name) }}', '{{ $contact->phone_number }}')" class="text-on-surface-variant hover:text-primary transition-colors p-0.5 sm:p-0" title="Schedule Message">
+                                        <span class="material-symbols-outlined text-[16px] sm:text-[24px]">calendar_clock</span>
                                     </button>
                                     <button type="button" onclick="deleteContact(event, {{ $contact->id }})" class="text-on-surface-variant hover:text-error transition-colors p-0.5 sm:p-0" title="Delete Contact">
                                         <span class="material-symbols-outlined text-[16px] sm:text-[24px]">delete</span>
@@ -151,6 +155,26 @@
                     </tbody>
                 </table>
             </div>
+
+            @if(isset($duplicates) && $duplicates->count() > 0)
+            <div class="bg-amber-50 border border-amber-200 rounded-lg p-3 sm:p-md mb-3">
+                <div class="flex items-start gap-3">
+                    <span class="material-symbols-outlined text-amber-600">warning</span>
+                    <div class="flex-1">
+                        <h4 class="font-bold text-sm text-amber-800">Duplikat Ditemukan!</h4>
+                        <p class="text-xs text-amber-700 mb-2">{{ $duplicates->count() }} nomor terduplikasi.</p>
+                        <div class="space-y-1">
+                            @foreach($duplicates as $dup)
+                            <div class="flex items-center justify-between bg-white p-2 rounded border border-amber-100">
+                                <span class="text-xs font-mono">{{ $dup->phone_number }} ({{ $dup->count }}x - {{ $dup->names }})</span>
+                                <button onclick="mergeDuplicates('{{ $dup->phone_number }}')" class="text-xs bg-amber-500 text-white px-2 py-1 rounded hover:bg-amber-600">Merge</button>
+                            </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @endif
             
             <!-- Pagination Footer -->
             <div class="p-2 sm:p-md bg-surface-container-low border-t border-outline-variant flex flex-col sm:flex-row items-center justify-between gap-2">
@@ -426,6 +450,48 @@
                 <div class="px-lg py-md border-t border-outline-variant bg-surface-container-lowest flex justify-end gap-sm">
                     <button type="button" onclick="document.getElementById('directMessageModal').classList.add('hidden')" class="px-md py-sm font-label-lg font-bold text-on-surface-variant hover:bg-surface-variant rounded-lg">Batal</button>
                     <button type="submit" class="px-md py-sm font-label-lg font-bold bg-primary text-white rounded-lg hover:shadow-md">Kirim Sekarang</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Schedule -->
+    <div id="scheduleModal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-base">
+        <div class="bg-white rounded-xl shadow-lg w-full max-w-md overflow-hidden">
+            <div class="px-lg py-md border-b border-outline-variant flex justify-between items-center">
+                <h3 class="font-headline-sm text-headline-sm text-on-surface">Jadwalkan Pesan</h3>
+                <button onclick="document.getElementById('scheduleModal').classList.add('hidden')" type="button" class="text-on-surface-variant hover:text-error">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <form id="scheduleForm" method="POST" action="{{ route('campaigns.store') }}">
+                @csrf
+                <div class="p-lg space-y-md">
+                    <div>
+                        <label class="block font-label-md text-label-md text-on-surface mb-xs">Penerima</label>
+                        <input type="text" id="scheduleRecipient" readonly class="w-full bg-surface-container-low border border-outline-variant px-md py-sm rounded-lg text-on-surface-variant outline-none">
+                        <input type="hidden" name="target_type" value="manual">
+                        <input type="hidden" name="manual_numbers" id="scheduleNumber">
+                    </div>
+                    <div>
+                        <label class="block font-label-md text-label-md text-on-surface mb-xs">Nama Jadwal</label>
+                        <input type="text" name="name" required class="w-full bg-surface-container-lowest border border-outline-variant px-md py-sm rounded-lg focus:outline-none focus:border-primary" placeholder="cth: Follow Up">
+                    </div>
+                    <div>
+                        <label class="block font-label-md text-label-md text-on-surface mb-xs">Pesan</label>
+                        <textarea name="message_template" required rows="4" placeholder="Ketik pesan..." class="w-full bg-surface-container-lowest border border-outline-variant px-md py-sm rounded-lg focus:outline-none focus:border-primary"></textarea>
+                    </div>
+                    <div>
+                        <label class="block font-label-md text-label-md text-on-surface mb-xs">Jadwal Kirim</label>
+                        <input type="datetime-local" name="scheduled_at" required class="w-full bg-surface-container-lowest border border-outline-variant px-md py-sm rounded-lg focus:outline-none focus:border-primary">
+                    </div>
+                    <input type="hidden" name="is_scheduled" value="on">
+                    <input type="hidden" name="schedule_type" value="once">
+                    <input type="hidden" name="is_active" value="on">
+                </div>
+                <div class="px-lg py-md border-t border-outline-variant bg-surface-container-lowest flex justify-end gap-sm">
+                    <button type="button" onclick="document.getElementById('scheduleModal').classList.add('hidden')" class="px-md py-sm font-label-lg font-bold text-on-surface-variant hover:bg-surface-variant rounded-lg">Batal</button>
+                    <button type="submit" class="px-md py-sm font-label-lg font-bold bg-primary text-white rounded-lg hover:shadow-md">Jadwalkan</button>
                 </div>
             </form>
         </div>
@@ -743,5 +809,25 @@
                 });
             }
         });
+
+        function mergeDuplicates(phoneNumber) {
+            if (!confirm(`Gabungkan semua duplikat untuk nomor ${phoneNumber}?`)) return;
+            fetch('/contacts/merge-duplicates', {
+                method: 'POST',
+                headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json', 'Content-Type': 'application/json' },
+                body: JSON.stringify({ phone_number: phoneNumber })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) { location.reload(); }
+                else { alert(data.message); }
+            });
+        }
+
+        function openScheduleModal(contactId, name, phoneNumber) {
+            document.getElementById('scheduleRecipient').value = `${name} (${phoneNumber})`;
+            document.getElementById('scheduleNumber').value = phoneNumber;
+            document.getElementById('scheduleModal').classList.remove('hidden');
+        }
     </script>
 @endpush

@@ -51,6 +51,11 @@
                 {{ session('success') }}
             </div>
         @endif
+        @if(session('info'))
+            <div class="bg-blue-100 border border-blue-400 text-blue-700 px-3 sm:px-lg py-2 sm:py-md rounded-xl mb-3 sm:mb-lg text-xs sm:text-sm">
+                {{ session('info') }}
+            </div>
+        @endif
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-gutter">
             
@@ -75,7 +80,7 @@
                                     </div>
                                     <p class="text-[10px] sm:text-label-md text-on-surface-variant truncate">Nomor: <span class="font-mono">{{ $dev->phone_number ?? '-' }}</span></p>
                                     <p class="text-[10px] sm:text-label-md text-on-surface-variant">Delay: <span class="bg-primary/5 text-primary px-1 sm:px-sm py-0.5 rounded font-bold">{{ $dev->delay_seconds }} detik</span></p>
-                                    <p class="text-[10px] sm:text-label-md text-on-surface-variant hidden sm:block">Gateway: <span class="bg-primary/5 text-[#006d2f] px-1 sm:px-sm py-0.5 rounded font-mono text-[9px] sm:text-xs truncate max-w-[200px] inline-block align-bottom">{{ $dev->gateway_url ?? 'https://api.fonnte.com' }}</span></p>
+                                    <p class="text-[10px] sm:text-label-md text-on-surface-variant hidden sm:block">Gateway: <span class="bg-primary/5 text-[#006d2f] px-1 sm:px-sm py-0.5 rounded font-mono text-[9px] sm:text-xs truncate max-w-[200px] inline-block align-bottom">{{ $dev->gateway_url ?? 'http://localhost:3000' }}</span></p>
                                 </div>
                                 
                                 <div class="flex flex-wrap items-center gap-1 sm:gap-sm flex-shrink-0">
@@ -126,7 +131,7 @@
                         <div>
                             <label class="block text-[9px] sm:text-label-sm text-outline uppercase tracking-wider mb-0.5 sm:mb-xs">Status Perangkat</label>
                             <div class="flex items-center gap-0.5 sm:gap-xs bg-surface-container-low p-1 sm:p-sm rounded-lg border border-outline-variant/30">
-                                <code class="flex-1 font-mono text-[10px] sm:text-xs select-all text-on-surface truncate" id="deviceWebhookUrl">{{ url('/webhook/fonnte/device') }}</code>
+                                <code class="flex-1 font-mono text-[10px] sm:text-xs select-all text-on-surface truncate" id="deviceWebhookUrl">{{ url('/webhook/whatsapp/device') }}</code>
                                 <button onclick="copyToClipboard('deviceWebhookUrl', this)" type="button" class="p-0.5 sm:p-xs hover:bg-surface-container rounded text-primary transition-all flex items-center">
                                     <span class="material-symbols-outlined text-[16px] sm:text-[18px]">content_copy</span>
                                 </button>
@@ -135,7 +140,7 @@
                         <div>
                             <label class="block text-[9px] sm:text-label-sm text-outline uppercase tracking-wider mb-0.5 sm:mb-xs">Webhook Auto-Reply</label>
                             <div class="flex items-center gap-0.5 sm:gap-xs bg-surface-container-low p-1 sm:p-sm rounded-lg border border-outline-variant/30">
-                                <code class="flex-1 font-mono text-[10px] sm:text-xs select-all text-on-surface truncate" id="messageWebhookUrl">{{ url('/webhook/fonnte/message') }}</code>
+                                <code class="flex-1 font-mono text-[10px] sm:text-xs select-all text-on-surface truncate" id="messageWebhookUrl">{{ url('/webhook/whatsapp/message') }}</code>
                                 <button onclick="copyToClipboard('messageWebhookUrl', this)" type="button" class="p-0.5 sm:p-xs hover:bg-surface-container rounded text-primary transition-all flex items-center">
                                     <span class="material-symbols-outlined text-[16px] sm:text-[18px]">content_copy</span>
                                 </button>
@@ -225,15 +230,15 @@
                            class="w-full bg-surface-container-low border border-outline-variant p-sm rounded-lg text-body-md focus:outline-none focus:border-primary">
                 </div>
                 <div>
-                    <label class="block text-label-md font-bold text-on-surface mb-xs">Fonnte API Token</label>
-                    <input type="password" name="token" required placeholder="Masukkan Token Fonnte..."
+                    <label class="block text-label-md font-bold text-on-surface mb-xs">WhatsApp Token</label>
+                    <input type="password" name="token" required placeholder="Masukkan Token WhatsApp..."
                            class="w-full bg-surface-container-low border border-outline-variant p-sm rounded-lg text-body-md focus:outline-none focus:border-primary">
                 </div>
                 <div>
                     <label class="block text-label-md font-bold text-on-surface mb-xs">Gateway URL</label>
-                    <input type="url" name="gateway_url" value="https://api.fonnte.com" placeholder="Contoh: https://api.fonnte.com atau http://localhost:3000"
+                    <input type="url" name="gateway_url" value="http://localhost:3000" placeholder="http://localhost:3000"
                            class="w-full bg-surface-container-low border border-outline-variant p-sm rounded-lg text-body-md focus:outline-none focus:border-primary">
-                    <p class="text-[11px] text-on-surface-variant mt-1">Gunakan <code>https://api.fonnte.com</code> untuk Fonnte, atau <code>http://localhost:3000</code> untuk self-host whatsapp-web.js. Kosongkan untuk menggunakan default.</p>
+                    <p class="text-[11px] text-on-surface-variant mt-1">Gunakan <code>http://localhost:3000</code> untuk self-hosted WhatsApp gateway. Kosongkan untuk menggunakan default.</p>
                 </div>
                 <div>
                     <label class="block text-label-md font-bold text-on-surface mb-xs">Jeda Kirim / Delay Settings (detik)</label>
@@ -270,15 +275,15 @@
                            class="w-full bg-surface-container-low border border-outline-variant p-sm rounded-lg text-body-md focus:outline-none focus:border-primary">
                 </div>
                 <div>
-                    <label class="block text-label-md font-bold text-on-surface mb-xs">Fonnte API Token</label>
+                    <label class="block text-label-md font-bold text-on-surface mb-xs">WhatsApp Token</label>
                     <input type="password" name="token" id="editDeviceToken" required
                            class="w-full bg-surface-container-low border border-outline-variant p-sm rounded-lg text-body-md focus:outline-none focus:border-primary">
                 </div>
                 <div>
                     <label class="block text-label-md font-bold text-on-surface mb-xs">Gateway URL</label>
-                    <input type="url" name="gateway_url" id="editDeviceGatewayUrl" placeholder="Contoh: https://api.fonnte.com atau http://localhost:3000"
+                    <input type="url" name="gateway_url" id="editDeviceGatewayUrl" placeholder="http://localhost:3000"
                            class="w-full bg-surface-container-low border border-outline-variant p-sm rounded-lg text-body-md focus:outline-none focus:border-primary">
-                    <p class="text-[11px] text-on-surface-variant mt-1">Gunakan <code>https://api.fonnte.com</code> untuk Fonnte, atau <code>http://localhost:3000</code> untuk self-host whatsapp-web.js. Kosongkan untuk menggunakan default.</p>
+                    <p class="text-[11px] text-on-surface-variant mt-1">Gunakan <code>http://localhost:3000</code> untuk self-hosted WhatsApp gateway. Kosongkan untuk menggunakan default.</p>
                 </div>
                 <div>
                     <label class="block text-label-md font-bold text-on-surface mb-xs">Jeda Kirim / Delay Settings (detik)</label>

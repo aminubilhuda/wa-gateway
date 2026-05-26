@@ -7,7 +7,7 @@ use App\Models\Device;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
-class FonnteService
+class WhatsAppService
 {
     protected $token;
 
@@ -16,8 +16,8 @@ class FonnteService
     public function __construct()
     {
         $device = Device::first();
-        $this->token = $device && $device->token ? $device->token : env('FONNTE_TOKEN');
-        $this->baseUrl = $device && $device->gateway_url ? $device->gateway_url : env('WHATSAPP_GATEWAY_URL', 'https://api.fonnte.com');
+        $this->token = $device && $device->token ? $device->token : null;
+        $this->baseUrl = $device && $device->gateway_url ? $device->gateway_url : env('WHATSAPP_GATEWAY_URL', 'http://localhost:3000');
     }
 
     protected function normalizePhone($number): string
@@ -57,7 +57,7 @@ class FonnteService
     }
 
     /**
-     * Get Device details/status from Fonnte
+     * Get Device details/status from WhatsApp Gateway
      */
     public function getDeviceStatus()
     {
@@ -74,10 +74,10 @@ class FonnteService
                 return $response->json();
             }
         } catch (\Exception $e) {
-            Log::error('Fonnte getDeviceStatus error: '.$e->getMessage());
+            Log::error('WhatsApp getDeviceStatus error: '.$e->getMessage());
         }
 
-        return ['status' => false, 'message' => 'Gagal menghubungi Fonnte API.'];
+        return ['status' => false, 'message' => 'Gagal menghubungi WhatsApp Gateway.'];
     }
 
     /**
@@ -94,7 +94,7 @@ class FonnteService
 
             return $response->json();
         } catch (\Exception $e) {
-            Log::error('Fonnte getQr error: '.$e->getMessage());
+            Log::error('WhatsApp getQr error: '.$e->getMessage());
 
             return ['status' => false, 'message' => 'Gagal menghubungi WhatsApp gateway.'];
         }

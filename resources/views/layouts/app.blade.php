@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="light" lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html class="{{ auth()->check() && session('theme') === 'dark' ? 'dark' : 'light' }}" lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
@@ -109,6 +109,42 @@
             background-color: #f8f9ff;
             font-family: 'Inter', sans-serif;
         }
+        .dark body { background-color: #0f172a; }
+        .dark .bento-card { background: #1e293b; border-color: #334155; }
+        .dark .bg-surface-container-lowest { background-color: #1e293b !important; }
+        .dark .bg-surface-container-low { background-color: #1e293b !important; }
+        .dark .bg-surface-container { background-color: #334155 !important; }
+        .dark .bg-surface-container-high { background-color: #1e293b !important; }
+        .dark .bg-surface-container-highest { background-color: #334155 !important; }
+        .dark .bg-white { background-color: #1e293b !important; }
+        .dark .text-on-background { color: #f1f5f9; }
+        .dark .text-on-surface-variant { color: #94a3b8; }
+        .dark .text-outline { color: #64748b; }
+        .dark .text-on-surface { color: #f1f5f9; }
+        .dark .text-on-primary-container { color: #bbf7d0; }
+        .dark .text-primary { color: #4ade80; }
+        .dark .text-secondary { color: #94a3b8; }
+        .dark .text-error { color: #fca5a5; }
+        .dark .text-on-secondary { color: #e2e8f0; }
+        .dark .border-outline-variant { border-color: #334155 !important; }
+        .dark .divide-outline-variant > * + * { border-color: #334155; }
+        .dark input, .dark select, .dark textarea { background-color: #0f172a !important; color: #f1f5f9 !important; border-color: #334155 !important; }
+        .dark .bg-primary\/10 { background-color: rgba(74, 222, 128, 0.1) !important; }
+        .dark .bg-primary\/5 { background-color: rgba(74, 222, 128, 0.05) !important; }
+        .dark .bg-error-container\/40 { background-color: rgba(252, 165, 165, 0.15) !important; }
+        .dark .bg-amber-100 { background-color: rgba(251, 191, 36, 0.15) !important; }
+        .dark .text-amber-800 { color: #fcd34d; }
+        .dark .bg-green-100 { background-color: rgba(74, 222, 128, 0.15) !important; }
+        .dark .text-green-700 { color: #86efac; }
+        .dark .text-red-700 { color: #fca5a5; }
+        .dark .bg-red-100 { background-color: rgba(252, 165, 165, 0.15) !important; }
+        .dark .bg-blue-100 { background-color: rgba(96, 165, 250, 0.15) !important; }
+        .dark .text-blue-800 { color: #93c5fd; }
+        .dark .text-green-800 { color: #86efac; }
+        .dark .text-red-800 { color: #fca5a5; }
+        .dark .text-amber-700 { color: #fcd34d; }
+        .dark .text-amber-600 { color: #fbbf24; }
+        .dark .ring-primary { --tw-ring-color: rgba(74, 222, 128, 0.5); }
         .bento-card {
             background: #ffffff;
             border: 1px solid #E2E8F0;
@@ -133,16 +169,13 @@
 </head>
 <body class="text-on-background">
 
-    <!-- SIDEBAR TOGGLE (hidden checkbox) -->
-    <input type="checkbox" id="sidebarToggle" class="hidden peer" autocomplete="off">
-
-    <!-- OVERLAY for mobile sidebar -->
-    <label for="sidebarToggle" class="fixed inset-0 bg-black/50 z-30 hidden peer-checked:block lg:hidden cursor-pointer transition-opacity duration-300"></label>
+    <!-- SIDEBAR OVERLAY (mobile only) -->
+    <div id="sidebarOverlay" class="fixed inset-0 bg-black/50 z-30 hidden lg:hidden cursor-pointer transition-opacity duration-300" onclick="toggleSidebar(false)"></div>
 
     @include('components.sidebar')
 
     <!-- MAIN CONTENT WRAPPER -->
-    <main class="lg:ml-[240px] min-h-screenlg:pt-0">
+    <main class="lg:ml-[240px] min-h-screen lg:pt-0">
 
         @include('components.header')
 
@@ -204,6 +237,35 @@
     </div>
 
     <script>
+        // Sidebar toggle
+        function toggleSidebar(open) {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            const isOpen = open === true || (open === undefined && sidebar.classList.contains('-translate-x-full'));
+            if (isOpen) {
+                sidebar.classList.remove('-translate-x-full');
+                sidebar.classList.add('translate-x-0');
+                overlay.classList.remove('hidden');
+                document.body.classList.add('overflow-hidden', 'lg:overflow-auto');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                sidebar.classList.remove('translate-x-0');
+                overlay.classList.add('hidden');
+                document.body.classList.remove('overflow-hidden', 'lg:overflow-auto');
+            }
+        }
+
+        const themeToggle = document.getElementById('themeToggle');
+        if (themeToggle) {
+            themeToggle.addEventListener('click', function() {
+                const html = document.documentElement;
+                const isDark = html.classList.toggle('dark');
+                this.textContent = isDark ? 'light_mode' : 'dark_mode';
+                this.dataset.icon = isDark ? 'light_mode' : 'dark_mode';
+                fetch('/theme/toggle', { method: 'POST', headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' } });
+            });
+        }
+
         function toggleSupportModal(show) {
             const modal = document.getElementById('supportModal');
             if (show) {

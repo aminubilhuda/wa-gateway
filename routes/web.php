@@ -11,6 +11,9 @@ use App\Http\Controllers\MessageTemplateController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\WebhookController;
+use App\Http\Controllers\WebhookLogController;
+use App\Models\Contact;
+use App\Models\MessageLog;
 use Illuminate\Support\Facades\Route;
 
 // Auth Routes (Guest Only)
@@ -51,15 +54,22 @@ Route::middleware('auth')->group(function () {
     Route::delete('/contacts/{contact}', [ContactController::class, 'destroy'])->name('contacts.destroy');
     Route::put('/contacts/{contact}', [ContactController::class, 'update'])->name('contacts.update');
     Route::post('/contacts/{contact}/send-message', [ContactController::class, 'sendMessage'])->name('contacts.send-message');
+    Route::get('/contacts/duplicates', [ContactController::class, 'duplicates'])->name('contacts.duplicates');
+    Route::post('/contacts/merge-duplicates', [ContactController::class, 'mergeDuplicates'])->name('contacts.merge-duplicates');
 
     Route::get('/campaigns', [CampaignController::class, 'index'])->name('campaigns');
     Route::post('/campaigns', [CampaignController::class, 'store'])->name('campaigns.store');
     Route::post('/campaigns/{campaign}/toggle', [CampaignController::class, 'toggle'])->name('campaigns.toggle');
     Route::put('/campaigns/{campaign}', [CampaignController::class, 'update'])->name('campaigns.update');
     Route::delete('/campaigns/{campaign}', [CampaignController::class, 'destroy'])->name('campaigns.destroy');
+    Route::post('/campaigns/{campaign}/archive', [CampaignController::class, 'archive'])->name('campaigns.archive');
+    Route::post('/campaigns/{campaign}/restore', [CampaignController::class, 'restore'])->name('campaigns.restore');
+    Route::get('/campaigns/archived', [CampaignController::class, 'archived'])->name('campaigns.archived');
 
     Route::get('/reports', [MessageLogController::class, 'index'])->name('reports');
     Route::get('/reports/export', [MessageLogController::class, 'exportCsv'])->name('reports.export');
+    Route::post('/reports/{log}/retry', [MessageLogController::class, 'retry'])->name('reports.retry');
+    Route::post('/reports/retry-all', [MessageLogController::class, 'retryAll'])->name('reports.retry-all');
 
     Route::get('/auto-reply', [AutoReplyController::class, 'index'])->name('auto-reply');
     Route::post('/auto-reply/{autoReply}/toggle', [AutoReplyController::class, 'toggle'])->name('auto-reply.toggle');
@@ -81,12 +91,30 @@ Route::middleware('auth')->group(function () {
     Route::get('/blacklist', [BlacklistController::class, 'index'])->name('blacklist');
     Route::post('/blacklist', [BlacklistController::class, 'store'])->name('blacklist.store');
     Route::delete('/blacklist/{blacklist}', [BlacklistController::class, 'destroy'])->name('blacklist.destroy');
+
+    Route::get('/webhook-logs', [WebhookLogController::class, 'index'])->name('webhook-logs');
+    Route::get('/webhook-logs/{webhookLog}', [WebhookLogController::class, 'show'])->name('webhook-logs.show');
+
+    Route::get('/api/conversation/{contact}', function (Contact $contact) {
+        return MessageLog::where('contact_id', $contact->id)
+            ->whereNull('campaign_id')
+            ->with('contact')
+            ->orderBy('created_at', 'asc')
+            ->get();
+    })->name('api.conversation');
+
+    Route::post('/theme/toggle', function () {
+        $theme = session('theme') === 'dark' ? 'light' : 'dark';
+        session(['theme' => $theme]);
+
+        return response()->json(['theme' => $theme]);
+    })->name('theme.toggle');
 });
 
 // Webhook Routes (Public — with rate limiting)
-Route::match(['get', 'post'], '/webhook/fonnte/device', [WebhookController::class, 'device'])
-    ->name('webhook.fonnte.device')
+Route::match(['get', 'post'], '/webhook/whatsapp/device', [WebhookController::class, 'device'])
+    ->name('webhook.whatsapp.device')
     ->middleware('throttle:webhook-device');
-Route::match(['get', 'post'], '/webhook/fonnte/message', [WebhookController::class, 'message'])
-    ->name('webhook.fonnte.message')
+Route::match(['get', 'post'], '/webhook/whatsapp/message', [WebhookController::class, 'message'])
+    ->name('webhook.whatsapp.message')
     ->middleware('throttle:webhook-message');

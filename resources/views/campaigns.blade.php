@@ -24,6 +24,10 @@
             </div>
             <div class="flex gap-2 sm:gap-md w-full sm:w-auto">
                 <button type="button" id="cancelEditBtn" onclick="resetForm()" class="hidden flex-1 sm:flex-none px-3 sm:px-lg py-1.5 sm:py-sm border border-error text-error rounded-lg font-bold hover:bg-error/10 transition-colors active:scale-95 text-xs sm:text-sm">Batal Edit</button>
+                <button type="button" id="previewBtn" onclick="openPreviewModal()" class="flex-1 sm:flex-none px-3 sm:px-lg py-1.5 sm:py-sm border border-outline-variant text-on-surface rounded-lg font-bold hover:bg-surface-container-low transition-colors active:scale-95 text-xs sm:text-sm">
+                    <span class="material-symbols-outlined text-[16px] sm:text-[24px] align-middle">visibility</span>
+                    Preview
+                </button>
                 <button type="submit" id="submitBtn" class="flex-1 sm:flex-none px-3 sm:px-lg py-1.5 sm:py-sm bg-primary-container text-on-primary-container rounded-lg font-bold hover:brightness-95 transition-all active:scale-95 flex items-center justify-center gap-1 sm:gap-sm text-xs sm:text-sm">
                     <span class="material-symbols-outlined text-[16px] sm:text-[24px]" id="submitIcon">send</span>
                     <span id="submitText">Send Now</span>
@@ -387,6 +391,10 @@
                     <span class="w-2 sm:w-2.5 h-2 sm:h-2.5 rounded-full bg-amber-500 animate-pulse"></span>
                     <span class="text-[10px] sm:text-label-md text-on-surface-variant font-bold">WIB</span>
                 </div>
+                <a href="{{ route('campaigns.archived') }}" class="text-[10px] sm:text-label-md text-outline hover:text-primary font-bold flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[14px] sm:text-[16px]">archive</span>
+                    Archived
+                </a>
             </div>
             <div class="overflow-x-auto overflow-y-hidden">
                 <table class="w-full text-left border-collapse min-w-[600px]">
@@ -488,12 +496,21 @@
                                             <span class="material-symbols-outlined text-[16px] sm:text-[20px]">delete</span>
                                         </button>
                                     </form>
+                                    @if($campaign->archived_at)
+                                    <button type="button" onclick="restoreCampaign({{ $campaign->id }})" class="p-0.5 sm:p-xs text-outline hover:text-green-600 hover:bg-green-50 rounded transition-colors" title="Restore">
+                                        <span class="material-symbols-outlined text-[16px] sm:text-[20px]">unarchive</span>
+                                    </button>
+                                    @else
+                                    <button type="button" onclick="archiveCampaign({{ $campaign->id }})" class="p-0.5 sm:p-xs text-outline hover:text-amber-600 hover:bg-amber-50 rounded transition-colors" title="Archive">
+                                        <span class="material-symbols-outlined text-[16px] sm:text-[20px]">archive</span>
+                                    </button>
+                                    @endif
                                 </div>
                             </td>
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="7" class="px-2 sm:px-lg py-1.5 sm:py-md text-center text-on-surface-variant text-xs">Belum ada kampanye.</td>
+                            <td colspan="8" class="px-2 sm:px-lg py-1.5 sm:py-md text-center text-on-surface-variant text-xs">Belum ada kampanye.</td>
                         </tr>
                         @endforelse
                     </tbody>
@@ -534,6 +551,32 @@
             @endif
         </div>
     </div>
+<div id="fullPreviewModal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-base">
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <div class="px-lg py-md border-b border-outline-variant flex justify-between items-center sticky top-0 bg-white z-10">
+            <h3 class="font-headline-sm text-headline-sm text-on-surface">Campaign Preview</h3>
+            <button onclick="document.getElementById('fullPreviewModal').classList.add('hidden')" class="text-on-surface-variant hover:text-error">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <div class="p-lg space-y-md">
+            <div class="bg-surface-container-low rounded-lg p-md">
+                <p class="text-label-sm text-on-surface-variant mb-xs">Recipients:</p>
+                <p id="previewRecipientCount" class="font-bold text-body-md text-on-surface">-</p>
+            </div>
+            <div>
+                <p class="text-label-sm text-on-surface-variant mb-xs">Message:</p>
+                <div id="previewMessageContent" class="bg-surface-container-low p-md rounded-lg text-body-md text-on-surface whitespace-pre-wrap border border-outline-variant/30"></div>
+            </div>
+            <div class="bg-amber-50 border border-amber-200 rounded-lg p-md text-xs text-amber-800">
+                <strong>Note:</strong> Variables like <code>[Name]</code> will be replaced with actual contact data when sent.
+            </div>
+        </div>
+        <div class="px-lg py-md border-t border-outline-variant bg-surface-container-lowest flex justify-end">
+            <button onclick="document.getElementById('fullPreviewModal').classList.add('hidden')" class="px-md py-sm font-label-lg font-bold bg-primary text-white rounded-lg hover:shadow-md">Tutup</button>
+        </div>
+    </div>
+</div>
 @endsection
 
 @push('scripts')
@@ -797,6 +840,23 @@
             }
         }
 
+        function openPreviewModal() {
+            const message = document.getElementById('messageEditor').value;
+            const targetType = document.getElementById('targetTypeSelect').value;
+            let count = 0;
+            if (targetType === 'all') count = 'All active contacts';
+            else if (targetType === 'manual') {
+                const nums = document.getElementById('manualNumbersInput').value.split(',').filter(n => n.trim());
+                count = nums.length + ' numbers';
+            }
+            else if (targetType === 'group') count = 'Selected group';
+            else if (targetType === 'random') count = 'Random contacts';
+            else if (targetType === 'excel') count = 'Excel/CSV rows';
+            document.getElementById('previewRecipientCount').textContent = count;
+            document.getElementById('previewMessageContent').textContent = message || '(empty message)';
+            document.getElementById('fullPreviewModal').classList.remove('hidden');
+        }
+
         // Function to reset form back to Create mode
         function resetForm() {
             const form = document.getElementById('campaignForm');
@@ -887,7 +947,7 @@
                             if (tbody && tbody.querySelectorAll('tr[id^="campaign-row-"]').length === 0) {
                                 tbody.innerHTML = `
                                     <tr>
-                                        <td colspan="7" class="px-lg py-md text-center text-on-surface-variant">Belum ada kampanye yang dibuat.</td>
+                                        <td colspan="8" class="px-lg py-md text-center text-on-surface-variant">Belum ada kampanye yang dibuat.</td>
                                     </tr>
                                 `;
                             }
@@ -916,5 +976,41 @@
                 });
             });
         });
+
+        function archiveCampaign(id) {
+            if (!confirm('Arsipkan kampanye ini?')) return;
+            const row = document.getElementById(`campaign-row-${id}`);
+            fetch(`/campaigns/${id}/archive`, {
+                method: 'POST',
+                headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    row.style.transition = 'all 0.4s ease-out';
+                    row.style.opacity = '0';
+                    row.style.transform = 'translateY(-20px)';
+                    setTimeout(() => { row.remove(); }, 400);
+                }
+            });
+        }
+
+        function restoreCampaign(id) {
+            if (!confirm('Kembalikan kampanye ini?')) return;
+            const row = document.getElementById(`campaign-row-${id}`);
+            fetch(`/campaigns/${id}/restore`, {
+                method: 'POST',
+                headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    row.style.transition = 'all 0.4s ease-out';
+                    row.style.opacity = '0';
+                    row.style.transform = 'translateY(-20px)';
+                    setTimeout(() => { row.remove(); }, 400);
+                }
+            });
+        }
     </script>
 @endpush

@@ -8,7 +8,7 @@ use App\Models\Contact;
 use App\Models\Device;
 use App\Models\MessageLog;
 use App\Models\MessageTemplate;
-use App\Services\FonnteService;
+use App\Services\WhatsAppService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Artisan;
 use Tests\TestCase;
@@ -97,7 +97,7 @@ class AdvancedFeaturesTest extends TestCase
      */
     public function test_webhook_incoming_message_stop_triggers_blacklist()
     {
-        $this->mock(FonnteService::class, function ($mock) {
+        $this->mock(WhatsAppService::class, function ($mock) {
             $mock->shouldReceive('sendMessage')
                 ->with('081277777777@c.us', 'Anda telah berhasil keluar dari daftar penerima pesan kami. Anda tidak akan menerima pesan blast lagi.')
                 ->once()
@@ -106,7 +106,7 @@ class AdvancedFeaturesTest extends TestCase
 
         // Trigger message webhook with 'stop'
         $data = ['sender' => '081277777777', 'message' => 'stop'];
-        $response = $this->postJson(route('webhook.fonnte.message'), $data, $this->webhookHeaders($data));
+        $response = $this->postJson(route('webhook.whatsapp.message'), $data, $this->webhookHeaders($data));
 
         $response->assertStatus(200);
 
@@ -188,11 +188,11 @@ class AdvancedFeaturesTest extends TestCase
             'status' => 'scheduled',
         ]);
 
-        // Mock FonnteService. Fonnte should send to the 2 non-blacklisted recipients.
+        // Mock WhatsAppService. WhatsApp should send to the 2 non-blacklisted recipients.
         // It should rotate them:
         // Recipient 1: 628122222222 -> Device A (token-device-a, delay '2-5')
         // Recipient 2: 628123333333 -> Device B (token-device-b, delay '5-10')
-        $this->mock(FonnteService::class, function ($mock) {
+        $this->mock(WhatsAppService::class, function ($mock) {
             $mock->shouldReceive('setToken')
                 ->with('token-device-a')
                 ->once()
